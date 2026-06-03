@@ -1,7 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
+import { getSecureItem } from '@/shared/storage';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -54,7 +54,7 @@ function RootNavigator() {
   const [authState, setAuthState] = useState<AuthState>('loading');
 
   useEffect(() => {
-    SecureStore.getItemAsync(SESSION_KEY)
+    getSecureItem(SESSION_KEY)
       .then(token => setAuthState(token != null ? 'authenticated' : 'unauthenticated'))
       .catch(() => setAuthState('unauthenticated'));
   }, []);
