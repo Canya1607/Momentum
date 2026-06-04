@@ -46,18 +46,17 @@ export function HabitCard({ habit, onToggle, onPress, onDelete }: HabitCardProps
     onToggle();
   }
 
-  // --- Streak badge spring entrance ---
-  // Start at 1 if streak already exists (app load) so it doesn't animate in for every card on mount.
-  const streakScale = useSharedValue(streak > 0 ? 1 : 0);
+  // --- Streak badge fade ---
+  // Opacity only — no scale so the text fades in-place without shifting layout.
+  const streakOpacity = useSharedValue(streak > 0 ? 1 : 0);
   useEffect(() => {
-    streakScale.value = streak > 0
-      ? withSpring(1, { damping: 10, stiffness: 150 })
-      : withTiming(0, { duration: 150 });
-  }, [streak, streakScale]);
+    streakOpacity.value = streak > 0
+      ? withTiming(1, { duration: 180 })
+      : withTiming(0, { duration: 120 });
+  }, [streak, streakOpacity]);
 
   const streakStyle = useAnimatedStyle(() => ({
-    opacity: streakScale.value,
-    transform: [{ scale: streakScale.value }],
+    opacity: streakOpacity.value,
   }));
 
   // --- Swipe-to-delete ---
