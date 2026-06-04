@@ -1,10 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { View, StyleSheet } from 'react-native';
+import { useAuth } from '@/features/auth';
 import { useEntitlement, ENTITLEMENT_KEY } from '@/features/subscription';
 import { setMockEntitlement } from '@/services/purchases';
 import { useTheme } from '@/services/theme';
 import { DEMO_MODE } from '@/config';
-import { infoAlert } from '@/shared/lib/alert';
+import { confirmAlert, infoAlert } from '@/shared/lib/alert';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { Screen } from '@/shared/ui/Screen';
@@ -14,6 +15,7 @@ export default function SettingsScreen() {
   const { colors, spacing } = useTheme();
   const queryClient = useQueryClient();
   const { data: entitlement } = useEntitlement();
+  const { signOut } = useAuth();
 
   async function handleSetFree() {
     await setMockEntitlement('free');
@@ -70,7 +72,30 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Task 11 will add: restore purchases, sign out */}
+      {/* Account */}
+      <View>
+        <Text
+          variant="label"
+          style={{ color: colors.textSecondary, marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: 1 }}
+        >
+          Account
+        </Text>
+        <Card>
+          <Button
+            label="Sign Out"
+            variant="ghost"
+            onPress={() =>
+              confirmAlert({
+                title: 'Sign Out',
+                message: 'Are you sure you want to sign out?',
+                confirmLabel: 'Sign Out',
+                onConfirm: signOut,
+              })
+            }
+            style={{ alignSelf: 'flex-start' }}
+          />
+        </Card>
+      </View>
     </Screen>
   );
 }
