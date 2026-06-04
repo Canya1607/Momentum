@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { View, StyleSheet } from 'react-native';
 import { useAuth } from '@/features/auth';
-import { useEntitlement, ENTITLEMENT_KEY } from '@/features/subscription';
+import { useEntitlement, useRestorePurchases, ENTITLEMENT_KEY } from '@/features/subscription';
 import { setMockEntitlement } from '@/services/purchases';
 import { useTheme } from '@/services/theme';
 import { DEMO_MODE } from '@/config';
@@ -11,10 +11,23 @@ import { Card } from '@/shared/ui/Card';
 import { Screen } from '@/shared/ui/Screen';
 import { Text } from '@/shared/ui/Text';
 
+function SectionLabel({ label }: { label: string }) {
+  const { colors, spacing } = useTheme();
+  return (
+    <Text
+      variant="label"
+      style={{ color: colors.textSecondary, marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: 1 }}
+    >
+      {label}
+    </Text>
+  );
+}
+
 export default function SettingsScreen() {
   const { colors, spacing } = useTheme();
   const queryClient = useQueryClient();
   const { data: entitlement } = useEntitlement();
+  const { mutateAsync: restore, isPending: restoring } = useRestorePurchases();
   const { signOut, email } = useAuth();
 
   async function handleSetFree() {
@@ -29,25 +42,45 @@ export default function SettingsScreen() {
     infoAlert('Upgraded', 'Subscription set to Pro.');
   }
 
+  async function handleRestore() {
+    try {
+      await restore();
+      infoAlert('Restored', 'Your purchases have been restored.');
+    } catch {
+      infoAlert('Error', 'Could not restore purchases. Please try again.');
+    }
+  }
+
   return (
     <Screen padded scroll>
       <Text variant="display" style={{ marginBottom: spacing.xl }}>Settings</Text>
 
-      {/* Dev tools — only visible when DEMO_MODE is on */}
+      {/* Subscription */}
+      <View style={{ marginBottom: spacing.xl }}>
+        <SectionLabel label="Subscription" />
+        <Card>
+          <Text variant="body" style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
+            Current plan:{' '}
+            <Text variant="body" style={{ color: entitlement === 'pro' ? colors.primary : colors.text, fontWeight: '600' }}>
+              {entitlement === 'pro' ? 'Momentum Pro' : entitlement ?? '…'}
+            </Text>
+          </Text>
+          <Button
+            label={restoring ? 'Restoring…' : 'Restore Purchases'}
+            variant="secondary"
+            onPress={handleRestore}
+            loading={restoring}
+          />
+        </Card>
+      </View>
+
+      {/* Developer — only visible when DEMO_MODE is on */}
       {DEMO_MODE && (
         <View style={{ marginBottom: spacing.xl }}>
-          <Text
-            variant="label"
-            style={{ color: colors.textSecondary, marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: 1 }}
-          >
-            Developer
-          </Text>
+          <SectionLabel label="Developer" />
           <Card>
-            <Text variant="body" style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
-              Current plan:{' '}
-              <Text variant="body" style={{ color: entitlement === 'pro' ? colors.primary : colors.text, fontWeight: '600' }}>
-                {entitlement ?? '…'}
-              </Text>
+            <Text variant="caption" style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
+              Toggle mock entitlement without going through the paywall.
             </Text>
             <View style={styles.row}>
               <View style={{ flex: 1 }}>
@@ -74,12 +107,7 @@ export default function SettingsScreen() {
 
       {/* Account */}
       <View>
-        <Text
-          variant="label"
-          style={{ color: colors.textSecondary, marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: 1 }}
-        >
-          Account
-        </Text>
+        <SectionLabel label="Account" />
         <Card>
           {!!email && (
             <Text variant="body" style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
