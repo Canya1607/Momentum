@@ -1,8 +1,8 @@
-import { View, StyleSheet } from 'react-native';
-import { useTheme } from '@/services/theme';
 import { DEMO_MODE } from '@/config';
-import { Text } from '@/shared/ui/Text';
+import { useTheme } from '@/services/theme';
 import { Button } from '@/shared/ui/Button';
+import { Text } from '@/shared/ui/Text';
+import { StyleSheet, View } from 'react-native';
 
 interface EmptyStateProps {
   onAdd: () => void;
@@ -10,7 +10,7 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ onAdd, onSeedData }: EmptyStateProps) {
-  const { spacing, colors } = useTheme();
+  const { spacing, colors, typography } = useTheme();
   return (
     <View style={[styles.container, { paddingVertical: spacing.xxl }]}>
       <Text style={styles.icon}>🌱</Text>
@@ -21,7 +21,7 @@ export function EmptyState({ onAdd, onSeedData }: EmptyStateProps) {
       <Button label="Add a Habit" onPress={onAdd} style={styles.button} />
       {DEMO_MODE && onSeedData && (
         <>
-          <Text variant="caption" style={{ color: colors.textSecondary, marginTop: spacing.lg, marginBottom: spacing.sm }}>
+          <Text variant="caption" style={{ color: colors.textSecondary, marginTop: spacing.lg, marginBottom: spacing.lg, fontSize: typography.size.md }}>
             or
           </Text>
           <Button
@@ -39,7 +39,7 @@ export function EmptyState({ onAdd, onSeedData }: EmptyStateProps) {
 const styles = StyleSheet.create({
   container: { alignItems: 'center' },
   icon: { fontSize: 56, marginBottom: 16 },
-  title: { marginBottom: 8 },
+  title: { marginBottom: 8, marginTop: 16 },
   subtitle: { textAlign: 'center', marginBottom: 32, opacity: 0.6 },
   button: { width: 200 },
 });
