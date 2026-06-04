@@ -1,15 +1,18 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { FlatList, TouchableOpacity, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
-import { HabitCard, EmptyState, useHabits, useToggleCompletion, useDeleteHabit, seedDemoHabits, HABITS_KEY } from '@/features/habits';
+import { HabitCard, HabitCardSkeleton, EmptyState, useHabits, useToggleCompletion, useDeleteHabit, seedDemoHabits, HABITS_KEY } from '@/features/habits';
 import { useEntitlement } from '@/features/subscription';
 import { useTheme } from '@/services/theme';
 import { FREE_HABIT_LIMIT } from '@/config';
 import { Screen } from '@/shared/ui/Screen';
 import { Text } from '@/shared/ui/Text';
+
+const SKELETON_COUNT = 3;
+const MIN_LOADING_MS = 900;
 
 export default function HabitListScreen() {
   const { colors } = useTheme();
@@ -20,6 +23,14 @@ export default function HabitListScreen() {
   const { mutate: remove } = useDeleteHabit();
   const { data: entitlement } = useEntitlement();
   const queryClient = useQueryClient();
+
+  // Keep skeleton visible for at least MIN_LOADING_MS even if data arrives faster.
+  const [minLoadDone, setMinLoadDone] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMinLoadDone(true), MIN_LOADING_MS);
+    return () => clearTimeout(t);
+  }, []);
+  const showSkeleton = isLoading || !minLoadDone;
 
   const isPro = entitlement === 'pro';
   const atFreeLimit = !isPro && (habits?.length ?? 0) >= FREE_HABIT_LIMIT;
@@ -43,11 +54,14 @@ export default function HabitListScreen() {
     });
   }, [navigation, atFreeLimit, colors.primary]);
 
-  if (isLoading) {
+  if (showSkeleton) {
     return (
-      <Screen>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color={colors.primary} />
+      <Screen padded={false}>
+        <View style={{ padding: 16 }}>
+          <Text variant="display" style={{ marginBottom: 20 }}>My Habits</Text>
+          {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+            <HabitCardSkeleton key={i} index={i} />
+          ))}
         </View>
       </Screen>
     );
