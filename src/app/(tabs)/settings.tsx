@@ -91,7 +91,7 @@ export default function SettingsScreen() {
           )}
           <Button
             label="Sign Out"
-            variant="ghost"
+            variant="secondary"
             onPress={() =>
               confirmAlert({
                 title: 'Sign Out',
