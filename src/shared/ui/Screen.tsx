@@ -17,7 +17,7 @@ export function Screen({ children, style, scroll = false, padded = true }: Scree
 
   const inner: ViewStyle = {
     flex: 1,
-    paddingHorizontal: padded ? spacing.md : 0,
+    padding: padded ? spacing.lg : 0,
   };
 
   return (

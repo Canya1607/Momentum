@@ -60,7 +60,7 @@ export default function HabitListScreen() {
   if (showSkeleton) {
     return (
       <Screen padded={false}>
-        <View style={{ padding: 16 }}>
+        <View style={{ padding: spacing.lg }}>
           {Array.from({ length: SKELETON_COUNT }, (_, i) => (
             <HabitCardSkeleton key={i} index={i} />
           ))}
@@ -75,7 +75,7 @@ export default function HabitListScreen() {
         data={habits}
         keyExtractor={item => item.id}
         contentContainerStyle={{
-          padding: 16,
+          padding: spacing.lg,
           paddingBottom: 96,
           flexGrow: 1,
           justifyContent: habits?.length === 0 ? 'center' : 'flex-start',
