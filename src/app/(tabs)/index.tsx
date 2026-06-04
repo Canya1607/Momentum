@@ -3,7 +3,8 @@ import { useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native';
-import { HabitCard, EmptyState, useHabits, useToggleCompletion, useDeleteHabit } from '@/features/habits';
+import { useQueryClient } from '@tanstack/react-query';
+import { HabitCard, EmptyState, useHabits, useToggleCompletion, useDeleteHabit, seedDemoHabits, HABITS_KEY } from '@/features/habits';
 import { useEntitlement } from '@/features/subscription';
 import { useTheme } from '@/services/theme';
 import { FREE_HABIT_LIMIT } from '@/config';
@@ -18,6 +19,7 @@ export default function HabitListScreen() {
   const { mutate: toggle } = useToggleCompletion();
   const { mutate: remove } = useDeleteHabit();
   const { data: entitlement } = useEntitlement();
+  const queryClient = useQueryClient();
 
   const isPro = entitlement === 'pro';
   const atFreeLimit = !isPro && (habits?.length ?? 0) >= FREE_HABIT_LIMIT;
@@ -62,7 +64,15 @@ export default function HabitListScreen() {
             My Habits
           </Text>
         }
-        ListEmptyComponent={<EmptyState onAdd={handleAdd} />}
+        ListEmptyComponent={
+          <EmptyState
+            onAdd={handleAdd}
+            onSeedData={async () => {
+              await seedDemoHabits(isPro ? 'pro' : 'free');
+              queryClient.invalidateQueries({ queryKey: HABITS_KEY });
+            }}
+          />
+        }
         renderItem={({ item }) => (
           <HabitCard
             habit={item}

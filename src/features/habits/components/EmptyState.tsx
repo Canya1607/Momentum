@@ -1,14 +1,16 @@
 import { View, StyleSheet } from 'react-native';
 import { useTheme } from '@/services/theme';
+import { DEMO_MODE } from '@/config';
 import { Text } from '@/shared/ui/Text';
 import { Button } from '@/shared/ui/Button';
 
 interface EmptyStateProps {
   onAdd: () => void;
+  onSeedData?: () => void;
 }
 
-export function EmptyState({ onAdd }: EmptyStateProps) {
-  const { spacing } = useTheme();
+export function EmptyState({ onAdd, onSeedData }: EmptyStateProps) {
+  const { spacing, colors } = useTheme();
   return (
     <View style={[styles.container, { paddingVertical: spacing.xxl }]}>
       <Text style={styles.icon}>🌱</Text>
@@ -17,6 +19,19 @@ export function EmptyState({ onAdd }: EmptyStateProps) {
         Add your first habit and start building momentum.
       </Text>
       <Button label="Add a Habit" onPress={onAdd} style={styles.button} />
+      {DEMO_MODE && onSeedData && (
+        <>
+          <Text variant="caption" style={{ color: colors.textSecondary, marginTop: spacing.lg, marginBottom: spacing.sm }}>
+            or
+          </Text>
+          <Button
+            label="Load demo data"
+            variant="secondary"
+            onPress={onSeedData}
+            style={styles.button}
+          />
+        </>
+      )}
     </View>
   );
 }
