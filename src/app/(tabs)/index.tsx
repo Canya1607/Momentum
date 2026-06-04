@@ -13,6 +13,7 @@ import { useEntitlement } from '@/features/subscription';
 import { useTheme } from '@/services/theme';
 import { FREE_HABIT_LIMIT } from '@/config';
 import { Screen } from '@/shared/ui/Screen';
+import { Text } from '@/shared/ui/Text';
 
 const SKELETON_COUNT = 3;
 const MIN_LOADING_MS = 900;
@@ -80,6 +81,11 @@ export default function HabitListScreen() {
           flexGrow: 1,
           justifyContent: habits?.length === 0 ? 'center' : 'flex-start',
         }}
+        ListHeaderComponent={
+          habits && habits.length > 0
+            ? <Text variant="display" style={{ marginBottom: spacing.xl }}>Habits</Text>
+            : null
+        }
         ListEmptyComponent={
           <EmptyState
             onAdd={handleAdd}
