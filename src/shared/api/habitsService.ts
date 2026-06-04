@@ -1,7 +1,14 @@
 import { getJsonItem, setJsonItem } from '@/shared/storage';
 import { today } from '@/shared/lib/date';
+// useAuthStore.getState() is the idiomatic Zustand pattern for reading store
+// state outside React components. Habits are namespaced per email so switching
+// accounts never leaks one user's data to another.
+import { useAuthStore } from '@/features/auth/store';
 
-const HABITS_KEY = '@momentum/habits';
+function habitsStorageKey(): string {
+  const email = useAuthStore.getState().email;
+  return `@momentum/habits/${email ?? 'anonymous'}`;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,11 +30,11 @@ function generateId(): string {
 }
 
 async function loadAll(): Promise<Habit[]> {
-  return (await getJsonItem<Habit[]>(HABITS_KEY)) ?? [];
+  return (await getJsonItem<Habit[]>(habitsStorageKey())) ?? [];
 }
 
 async function saveAll(habits: Habit[]): Promise<void> {
-  await setJsonItem(HABITS_KEY, habits);
+  await setJsonItem(habitsStorageKey(), habits);
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────

@@ -9,8 +9,12 @@
 import { setJsonItem } from '@/shared/storage';
 import { subtractDays, today } from '@/shared/lib/date';
 import type { Habit } from '@/shared/api';
+import { useAuthStore } from '@/features/auth/store';
 
-const HABITS_STORAGE_KEY = '@momentum/habits';
+function habitsStorageKey(): string {
+  const email = useAuthStore.getState().email;
+  return `@momentum/habits/${email ?? 'anonymous'}`;
+}
 
 /** Builds a completions array: `streakDays` consecutive days ending today + extra offsets. */
 function completions(streakDays: number, extraOffsets: number[] = []): string[] {
@@ -117,5 +121,5 @@ function buildProHabits(): Habit[] {
 
 export async function seedDemoHabits(plan: 'free' | 'pro'): Promise<void> {
   const habits = plan === 'pro' ? buildProHabits() : buildFreeHabits();
-  await setJsonItem(HABITS_STORAGE_KEY, habits);
+  await setJsonItem(habitsStorageKey(), habits);
 }
