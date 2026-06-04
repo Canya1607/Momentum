@@ -131,7 +131,55 @@ The README/code state clearly which is active. This is honest, and it shows I un
 
 ---
 
-## 8. Key constraints / gotchas (don't get stuck)
+## 8. Running & testing the app
+
+### Start the app
+
+```bash
+# Web (fastest for browsing the UI)
+npx expo start --web
+
+# iOS simulator (required for real StoreKit / IAP testing)
+npx expo run:ios
+```
+
+### Test accounts
+
+Any email address works — the sign-in is mocked. Habits, streaks, and stats are **isolated per email address**, so switching accounts gives a clean slate.
+
+| Email | Suggested use |
+|---|---|
+| `alice@test.com` | Primary test account |
+| `bob@test.com` | Second account — verify data isolation |
+| `free@test.com` | Demo free-tier limits |
+| `pro@test.com` | Demo pro features |
+
+Sign out from **Settings → Account → Sign Out**, then sign in with a different email to confirm each account has its own data.
+
+### Developer tools (Settings → Developer)
+
+These tools are only visible when `DEMO_MODE = true` (the default shipped config):
+
+| Tool | What it does |
+|---|---|
+| **Set Free / Set Pro** | Flips the mock entitlement instantly — no paywall needed |
+| **3 Free habits** | Seeds 3 habits with varied streaks (7d, 3d, 0d) so the habit list is populated |
+| **7 Pro habits** | Seeds 7 habits with streaks from 62 days down to 0 — makes the stats screen and charts meaningful |
+
+### Recommended demo flow
+
+1. Sign in as `alice@test.com`
+2. Settings → Developer → **Set Pro** + **7 Pro habits**
+3. Browse the habit list (swipe a card left to delete, tap the checkbox to see the spring animation)
+4. Open **Stats** — see the weekly bar chart animate in and the streak leaderboard
+5. Sign out → sign in as `bob@test.com` → confirm empty habit list (data isolation)
+6. Settings → Developer → **Set Free** + **3 Free habits**
+7. Try adding a 4th habit — hits the free-tier limit → paywall opens
+8. On the paywall, tap **Get Pro** to see the purchase flow → unlock
+
+---
+
+## 9. Key constraints / gotchas
 
 - **IAP needs a dev build, NOT Expo Go.** Use `npx expo run:ios`. Expo Go can't run native IAP code.
 - **StoreKit Configuration File = no publishing, no paid account needed.** Define products locally in a `.storekit` file in Xcode; uncheck "Sync with App Store Connect."
@@ -142,7 +190,7 @@ The README/code state clearly which is active. This is honest, and it shows I un
 
 ---
 
-## 9. Deliverable package to send the CTO
+## 10. Deliverable package to send the CTO
 
 - [ ] EAS **iOS simulator build** (`.app` they can run themselves)
 - [ ] Public **GitHub repo** (clean architecture, this README)
@@ -151,7 +199,7 @@ The README/code state clearly which is active. This is honest, and it shows I un
 
 ---
 
-## 10. How to proceed (Claude Code)
+## 11. How to proceed (Claude Code)
 
 1. Create the project folder, open a fresh VS Code session with Claude Code.
 2. Put **this README.md** and **CLAUDE.md** in the project root.
