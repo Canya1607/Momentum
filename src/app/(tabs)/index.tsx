@@ -5,11 +5,9 @@ import { useEffect } from 'react';
 import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native';
 import { HabitCard, EmptyState, useHabits, useToggleCompletion } from '@/features/habits';
 import { useTheme } from '@/services/theme';
+import { FREE_HABIT_LIMIT } from '@/config';
 import { Screen } from '@/shared/ui/Screen';
 import { Text } from '@/shared/ui/Text';
-
-// Free tier: ≤3 habits. Task 8 will gate behind entitlement check.
-const FREE_HABIT_LIMIT = 3;
 
 export default function HabitListScreen() {
   const { colors } = useTheme();
