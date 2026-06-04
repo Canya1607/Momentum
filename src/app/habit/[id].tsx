@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { confirmAlert, infoAlert } from '@/shared/lib/alert';
 import { useHabit, useCreateHabit, useUpdateHabit, useDeleteHabit } from '@/features/habits';
 import { useTheme } from '@/services/theme';
 import { Button } from '@/shared/ui/Button';
@@ -39,7 +40,7 @@ export default function HabitEditScreen() {
   async function handleSave() {
     const trimmed = name.trim();
     if (!trimmed) {
-      Alert.alert('Name required', 'Please enter a habit name.');
+      infoAlert('Name required', 'Please enter a habit name.');
       return;
     }
     try {
@@ -50,23 +51,21 @@ export default function HabitEditScreen() {
       }
       router.back();
     } catch {
-      Alert.alert('Error', 'Could not save habit. Please try again.');
+      infoAlert('Error', 'Could not save habit. Please try again.');
     }
   }
 
   function handleDelete() {
-    Alert.alert('Delete Habit', `Delete "${habit?.name ?? 'this habit'}"?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          removeAsync(id)
-            .then(() => router.back())
-            .catch(() => Alert.alert('Error', 'Could not delete habit.'));
-        },
+    confirmAlert({
+      title: 'Delete Habit',
+      message: `Delete "${habit?.name ?? 'this habit'}"?`,
+      confirmLabel: 'Delete',
+      onConfirm: () => {
+        removeAsync(id)
+          .then(() => router.back())
+          .catch(() => infoAlert('Error', 'Could not delete habit.'));
       },
-    ]);
+    });
   }
 
   const isBusy = isCreating || isUpdating || isDeleting;
