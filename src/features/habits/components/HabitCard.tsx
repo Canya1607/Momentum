@@ -1,6 +1,12 @@
+import { useTheme } from '@/services/theme';
+import { type Habit } from '@/shared/api';
+import { computeStreak, today } from '@/shared/lib/date';
+import { Card } from '@/shared/ui/Card';
+import { Text } from '@/shared/ui/Text';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useCallback, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -11,12 +17,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { type Habit } from '@/shared/api';
-import { computeStreak, today } from '@/shared/lib/date';
-import { useTheme } from '@/services/theme';
-import { Card } from '@/shared/ui/Card';
-import { Text } from '@/shared/ui/Text';
 
 const DELETE_THRESHOLD = 100; // px of left swipe to trigger delete
 
