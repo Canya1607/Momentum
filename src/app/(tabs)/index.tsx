@@ -3,7 +3,7 @@ import { useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native';
-import { HabitCard, EmptyState, useHabits, useToggleCompletion } from '@/features/habits';
+import { HabitCard, EmptyState, useHabits, useToggleCompletion, useDeleteHabit } from '@/features/habits';
 import { useEntitlement } from '@/features/subscription';
 import { useTheme } from '@/services/theme';
 import { FREE_HABIT_LIMIT } from '@/config';
@@ -16,6 +16,7 @@ export default function HabitListScreen() {
   const navigation = useNavigation();
   const { data: habits, isLoading } = useHabits();
   const { mutate: toggle } = useToggleCompletion();
+  const { mutate: remove } = useDeleteHabit();
   const { data: entitlement } = useEntitlement();
 
   const isPro = entitlement === 'pro';
@@ -67,6 +68,7 @@ export default function HabitListScreen() {
             habit={item}
             onToggle={() => toggle(item.id)}
             onPress={() => router.push(`/habit/${item.id}`)}
+            onDelete={() => remove(item.id)}
           />
         )}
       />

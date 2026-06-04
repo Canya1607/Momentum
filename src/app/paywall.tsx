@@ -5,8 +5,14 @@
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useEntitlement, useOfferings, usePurchase, useRestorePurchases } from '@/features/subscription';
 import { infoAlert } from '@/shared/lib/alert';
 import { Button } from '@/shared/ui/Button';
@@ -33,6 +39,18 @@ export default function PaywallScreen() {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const effectiveSelected = selectedId ?? offerings[0]?.productId ?? null;
+
+  // Slide-up + fade entrance when modal opens
+  const translateY = useSharedValue(60);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    translateY.value = withSpring(0, { damping: 20, stiffness: 180 });
+    opacity.value = withTiming(1, { duration: 350 });
+  }, []);
+  const entranceStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }));
 
   async function handlePurchase() {
     if (!effectiveSelected) return;
@@ -77,7 +95,7 @@ export default function PaywallScreen() {
 
   return (
     <Screen padded={false} scroll>
-      <View style={{ paddingHorizontal: spacing.lg, paddingTop: spacing.xl, paddingBottom: spacing.xxl }}>
+      <Animated.View style={[{ paddingHorizontal: spacing.lg, paddingTop: spacing.xl, paddingBottom: spacing.xxl }, entranceStyle]}>
 
         {/* Hero */}
         <Text variant="display" style={{ textAlign: 'center', marginBottom: spacing.xs }}>
@@ -134,7 +152,7 @@ export default function PaywallScreen() {
             {restoring ? 'Restoring…' : 'Restore Purchases'}
           </Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </Screen>
   );
 }
