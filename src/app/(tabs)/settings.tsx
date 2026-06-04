@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { View, StyleSheet } from 'react-native';
 import { useAuth } from '@/features/auth';
+import { seedDemoHabits, HABITS_KEY } from '@/features/habits';
 import { useEntitlement, useRestorePurchases, ENTITLEMENT_KEY } from '@/features/subscription';
 import { setMockEntitlement } from '@/services/purchases';
 import { useTheme } from '@/services/theme';
@@ -40,6 +41,12 @@ export default function SettingsScreen() {
     await setMockEntitlement('pro');
     queryClient.invalidateQueries({ queryKey: ENTITLEMENT_KEY });
     infoAlert('Upgraded', 'Subscription set to Pro.');
+  }
+
+  async function handleSeed(plan: 'free' | 'pro') {
+    await seedDemoHabits(plan);
+    queryClient.invalidateQueries({ queryKey: HABITS_KEY });
+    infoAlert('Seeded', `${plan === 'pro' ? '7' : '3'} demo habits loaded with varied streaks.`);
   }
 
   async function handleRestore() {
@@ -82,7 +89,10 @@ export default function SettingsScreen() {
             <Text variant="caption" style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
               Toggle mock entitlement without going through the paywall.
             </Text>
-            <View style={styles.row}>
+            <Text variant="caption" style={{ color: colors.textSecondary, marginBottom: spacing.sm }}>
+              Subscription
+            </Text>
+            <View style={[styles.row, { marginBottom: spacing.md }]}>
               <View style={{ flex: 1 }}>
                 <Button
                   label="Set Free"
@@ -98,6 +108,27 @@ export default function SettingsScreen() {
                   variant={entitlement === 'pro' ? 'primary' : 'secondary'}
                   onPress={handleSetPro}
                   disabled={entitlement === 'pro'}
+                />
+              </View>
+            </View>
+
+            <Text variant="caption" style={{ color: colors.textSecondary, marginBottom: spacing.sm }}>
+              Seed habits (replaces existing)
+            </Text>
+            <View style={styles.row}>
+              <View style={{ flex: 1 }}>
+                <Button
+                  label="3 Free habits"
+                  variant="secondary"
+                  onPress={() => handleSeed('free')}
+                />
+              </View>
+              <View style={{ width: spacing.sm }} />
+              <View style={{ flex: 1 }}>
+                <Button
+                  label="7 Pro habits"
+                  variant="secondary"
+                  onPress={() => handleSeed('pro')}
                 />
               </View>
             </View>
