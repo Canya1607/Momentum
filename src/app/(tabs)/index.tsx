@@ -62,6 +62,7 @@ export default function HabitListScreen() {
     return (
       <Screen padded={false}>
         <View style={{ padding: spacing.lg }}>
+          <Text variant="display" style={{ marginBottom: spacing.xl }}>Habits</Text>
           {Array.from({ length: SKELETON_COUNT }, (_, i) => (
             <HabitCardSkeleton key={i} index={i} />
           ))}
