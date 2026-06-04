@@ -92,7 +92,6 @@ export default function SettingsScreen() {
                 onConfirm: signOut,
               })
             }
-            style={{ alignSelf: 'flex-start' }}
           />
         </Card>
       </View>
