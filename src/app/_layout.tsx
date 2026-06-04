@@ -3,10 +3,11 @@ import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { getSecureItem } from '@/shared/storage';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 
+import { useAuthStore, SESSION_KEY } from '@/features/auth';
 import { ThemeProvider, useTheme } from '@/services/theme';
 import { queryClient } from '@/shared/api/queryClient';
 
@@ -15,9 +16,6 @@ export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = { initialRouteName: '(tabs)' };
 
 SplashScreen.preventAutoHideAsync();
-
-// production: replace 'session_token' key with a constant from features/auth
-const SESSION_KEY = 'session_token';
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -45,32 +43,31 @@ export default function RootLayout() {
   );
 }
 
-type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
-
 function RootNavigator() {
   const { colors } = useTheme();
   const router = useRouter();
   const segments = useSegments();
-  const [authState, setAuthState] = useState<AuthState>('loading');
+  const { token, isLoading, setToken, setLoading } = useAuthStore();
 
+  // Hydrate the Zustand store from SecureStore once on mount
   useEffect(() => {
     getSecureItem(SESSION_KEY)
-      .then(token => setAuthState(token != null ? 'authenticated' : 'unauthenticated'))
-      .catch(() => setAuthState('unauthenticated'));
+      .then(t => { setToken(t); setLoading(false); })
+      .catch(() => { setToken(null); setLoading(false); });
   }, []);
 
   useEffect(() => {
-    if (authState === 'loading') return;
+    if (isLoading) return;
     const inAuthGroup = segments[0] === '(auth)';
-    if (authState === 'unauthenticated' && !inAuthGroup) {
+    if (token === null && !inAuthGroup) {
       router.replace('/(auth)/sign-in');
-    } else if (authState === 'authenticated' && inAuthGroup) {
+    } else if (token !== null && inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [authState, segments, router]);
+  }, [token, isLoading, segments, router]);
 
   // Keep screen blank while auth state is resolving to avoid flash
-  if (authState === 'loading') return null;
+  if (isLoading) return null;
 
   return (
     <Stack
