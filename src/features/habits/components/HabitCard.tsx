@@ -8,6 +8,7 @@ import { useCallback, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  cancelAnimation,
   Extrapolation,
   interpolate,
   runOnJS,
@@ -39,9 +40,10 @@ export function HabitCard({ habit, onToggle, onPress, onDelete }: HabitCardProps
   }));
 
   function handleToggle() {
+    cancelAnimation(checkScale);
     checkScale.value = withSequence(
-      withSpring(0.7, { damping: 15, stiffness: 400 }),
-      withSpring(1, { damping: 8, stiffness: 200 }),
+      withTiming(0.75, { duration: 70 }),
+      withSpring(1, { damping: 20, stiffness: 300 }),
     );
     onToggle();
   }
