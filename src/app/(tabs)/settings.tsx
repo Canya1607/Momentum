@@ -4,7 +4,7 @@ import { useAuth } from '@/features/auth';
 import { seedDemoHabits, HABITS_KEY } from '@/features/habits';
 import { useEntitlement, useRestorePurchases, ENTITLEMENT_KEY } from '@/features/subscription';
 import { setMockEntitlement } from '@/services/purchases';
-import { useTheme } from '@/services/theme';
+import { useTheme, useThemeStore } from '@/services/theme';
 import { DEMO_MODE } from '@/config';
 import { confirmAlert, infoAlert } from '@/shared/lib/alert';
 import { Button } from '@/shared/ui/Button';
@@ -30,6 +30,7 @@ export default function SettingsScreen() {
   const { data: entitlement } = useEntitlement();
   const { mutateAsync: restore, isPending: restoring } = useRestorePurchases();
   const { signOut, email } = useAuth();
+  const { preference, setPreference } = useThemeStore();
 
   async function handleSetFree() {
     await setMockEntitlement('free');
@@ -61,6 +62,31 @@ export default function SettingsScreen() {
   return (
     <Screen padded scroll>
       <Text variant="display" style={{ marginBottom: spacing.xl }}>Settings</Text>
+
+      {/* Appearance */}
+      <View style={{ marginBottom: spacing.xl }}>
+        <SectionLabel label="Appearance" />
+        <Card>
+          <View style={styles.row}>
+            {([
+              { label: 'Light',  value: 'light'  },
+              { label: 'Auto',   value: 'system' },
+              { label: 'Dark',   value: 'dark'   },
+            ] as const).map(({ label, value }, i, arr) => (
+              <View key={value} style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                  <Button
+                    label={label}
+                    variant={preference === value ? 'primary' : 'secondary'}
+                    onPress={() => setPreference(value)}
+                  />
+                </View>
+                {i < arr.length - 1 && <View style={{ width: spacing.sm }} />}
+              </View>
+            ))}
+          </View>
+        </Card>
+      </View>
 
       {/* Subscription */}
       <View style={{ marginBottom: spacing.xl }}>
