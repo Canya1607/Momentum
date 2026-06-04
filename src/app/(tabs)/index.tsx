@@ -13,7 +13,6 @@ import { useEntitlement } from '@/features/subscription';
 import { useTheme } from '@/services/theme';
 import { FREE_HABIT_LIMIT } from '@/config';
 import { Screen } from '@/shared/ui/Screen';
-import { Text } from '@/shared/ui/Text';
 
 const SKELETON_COUNT = 3;
 const MIN_LOADING_MS = 900;
@@ -62,7 +61,6 @@ export default function HabitListScreen() {
     return (
       <Screen padded={false}>
         <View style={{ padding: 16 }}>
-          <Text variant="display" style={{ marginBottom: 20 }}>My Habits</Text>
           {Array.from({ length: SKELETON_COUNT }, (_, i) => (
             <HabitCardSkeleton key={i} index={i} />
           ))}
@@ -76,10 +74,12 @@ export default function HabitListScreen() {
       <FlatList
         data={habits}
         keyExtractor={item => item.id}
-        contentContainerStyle={{ padding: 16, paddingBottom: 96, flexGrow: 1 }}
-        ListHeaderComponent={
-          <Text variant="display" style={{ marginBottom: 20 }}>My Habits</Text>
-        }
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: 96,
+          flexGrow: 1,
+          justifyContent: habits?.length === 0 ? 'center' : 'flex-start',
+        }}
         ListEmptyComponent={
           <EmptyState
             onAdd={handleAdd}
