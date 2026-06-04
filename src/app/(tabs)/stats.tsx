@@ -1,13 +1,16 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { useEntitlement } from '@/features/subscription';
-import { useStats, StatCard, WeeklyChart } from '@/features/stats';
+import { useStats, StatCard, WeeklyChart, StatsSkeleton } from '@/features/stats';
 import { useTheme } from '@/services/theme';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { Screen } from '@/shared/ui/Screen';
 import { Text } from '@/shared/ui/Text';
+
+const MIN_LOADING_MS = 900;
 
 export default function StatsScreen() {
   const { colors, spacing } = useTheme();
@@ -15,12 +18,18 @@ export default function StatsScreen() {
   const { data: entitlement, isLoading } = useEntitlement();
   const stats = useStats();
 
-  if (isLoading) {
+  const [minLoadDone, setMinLoadDone] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMinLoadDone(true), MIN_LOADING_MS);
+    return () => clearTimeout(t);
+  }, []);
+  const showSkeleton = isLoading || !minLoadDone;
+
+  if (showSkeleton && entitlement === 'pro') {
     return (
-      <Screen>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color={colors.primary} />
-        </View>
+      <Screen padded={false} scroll>
+        <Text variant="display" style={{ margin: spacing.lg, marginBottom: 0 }}>Stats</Text>
+        <StatsSkeleton />
       </Screen>
     );
   }
