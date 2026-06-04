@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '@/services/theme';
 import { Card } from '@/shared/ui/Card';
+import { Text } from '@/shared/ui/Text';
 
 function useShimmerStyle(index: number) {
   const opacity = useSharedValue(1);
@@ -81,13 +82,13 @@ export function StatsSkeleton() {
       </View>
 
       {/* Chart area */}
-      <View style={block('40%', 14, radii.sm, bg)} />
-      <Animated.View style={[{ marginTop: spacing.sm, marginBottom: spacing.xl }, chartShimmer]}>
+      <Text variant="heading" style={{ marginBottom: spacing.md }}>Last 7 Days</Text>
+      <Animated.View style={[{ marginBottom: spacing.xl }, chartShimmer]}>
         <Card style={block('100%', 168, radii.lg, bg)} />
       </Animated.View>
 
       {/* Streaks heading */}
-      <View style={[block('30%', 14, radii.sm, bg), { marginBottom: spacing.md }]} />
+      <Text variant="heading" style={{ marginBottom: spacing.md }}>Streaks</Text>
 
       {/* Streak rows */}
       {Array.from({ length: STREAK_ROWS }, (_, i) => (
