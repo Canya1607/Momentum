@@ -15,7 +15,7 @@ export default function SettingsScreen() {
   const { colors, spacing } = useTheme();
   const queryClient = useQueryClient();
   const { data: entitlement } = useEntitlement();
-  const { signOut } = useAuth();
+  const { signOut, email } = useAuth();
 
   async function handleSetFree() {
     await setMockEntitlement('free');
@@ -81,6 +81,14 @@ export default function SettingsScreen() {
           Account
         </Text>
         <Card>
+          {!!email && (
+            <Text variant="body" style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
+              Signed in as{' '}
+              <Text variant="body" style={{ color: colors.text, fontWeight: '600' }}>
+                {email}
+              </Text>
+            </Text>
+          )}
           <Button
             label="Sign Out"
             variant="ghost"

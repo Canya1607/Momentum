@@ -1,13 +1,13 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { getSecureItem } from '@/shared/storage';
+import { getSecureItem, getItem } from '@/shared/storage';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 
-import { useAuthStore, SESSION_KEY } from '@/features/auth';
+import { useAuthStore, SESSION_KEY, EMAIL_KEY } from '@/features/auth';
 import { ThemeProvider, useTheme } from '@/services/theme';
 import { queryClient } from '@/shared/api/queryClient';
 
@@ -47,13 +47,13 @@ function RootNavigator() {
   const { colors } = useTheme();
   const router = useRouter();
   const segments = useSegments();
-  const { token, isLoading, setToken, setLoading } = useAuthStore();
+  const { token, isLoading, setToken, setEmail, setLoading } = useAuthStore();
 
-  // Hydrate the Zustand store from SecureStore once on mount
+  // Hydrate the Zustand store from persistent storage once on mount
   useEffect(() => {
-    getSecureItem(SESSION_KEY)
-      .then(t => { setToken(t); setLoading(false); })
-      .catch(() => { setToken(null); setLoading(false); });
+    Promise.all([getSecureItem(SESSION_KEY), getItem(EMAIL_KEY)])
+      .then(([t, e]) => { setToken(t); setEmail(e); setLoading(false); })
+      .catch(() => { setToken(null); setEmail(null); setLoading(false); });
   }, []);
 
   useEffect(() => {
