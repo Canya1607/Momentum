@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native';
 import { HabitCard, EmptyState, useHabits, useToggleCompletion } from '@/features/habits';
+import { useEntitlement } from '@/features/subscription';
 import { useTheme } from '@/services/theme';
 import { FREE_HABIT_LIMIT } from '@/config';
 import { Screen } from '@/shared/ui/Screen';
@@ -15,8 +16,10 @@ export default function HabitListScreen() {
   const navigation = useNavigation();
   const { data: habits, isLoading } = useHabits();
   const { mutate: toggle } = useToggleCompletion();
+  const { data: entitlement } = useEntitlement();
 
-  const atFreeLimit = (habits?.length ?? 0) >= FREE_HABIT_LIMIT;
+  const isPro = entitlement === 'pro';
+  const atFreeLimit = !isPro && (habits?.length ?? 0) >= FREE_HABIT_LIMIT;
 
   function handleAdd() {
     if (atFreeLimit) {
