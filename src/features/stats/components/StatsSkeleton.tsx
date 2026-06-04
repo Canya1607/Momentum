@@ -12,6 +12,13 @@ import { useTheme } from '@/services/theme';
 import { Card } from '@/shared/ui/Card';
 import { Text } from '@/shared/ui/Text';
 
+// Must match WeeklyChart's MAX_BAR_HEIGHT so the chart skeleton
+// is the exact same height as the real chart.
+const BAR_HEIGHT = 120;
+
+// Pre-set bar heights that look like realistic chart data.
+const CHART_BARS = [45, 72, 55, 100, 80, 110, 60];
+
 function useShimmerStyle(index: number) {
   const opacity = useSharedValue(1);
   useEffect(() => {
@@ -33,7 +40,40 @@ function block(width: ViewStyle['width'], height: number, borderRadius: number, 
   return { width, height, borderRadius, backgroundColor: bg };
 }
 
-/** Skeleton for one streak leaderboard row. */
+/**
+ * Mirrors WeeklyChart's column layout exactly so the card height is
+ * determined by the same structure — no manual height guessing.
+ */
+function ChartSkeleton({ shimmer }: { shimmer: ReturnType<typeof useShimmerStyle> }) {
+  const { colors, radii, spacing } = useTheme();
+  const bg = colors.border;
+
+  return (
+    <Animated.View style={[{ marginBottom: spacing.xl }, shimmer]}>
+      <Card>
+        <View style={{ flexDirection: 'row', gap: 4 }}>
+          {CHART_BARS.map((barH, i) => (
+            <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+              {/* Bar container — same fixed height as real WeeklyChart */}
+              <View style={{ height: BAR_HEIGHT, justifyContent: 'flex-end', width: '100%', alignItems: 'center' }}>
+                <View style={block('70%', barH, radii.sm, bg)} />
+              </View>
+              {/* Divider — same as real chart */}
+              <View style={{ height: 1, width: '100%', backgroundColor: bg, marginVertical: spacing.xs }} />
+              {/* Day label placeholder — height matches caption text */}
+              <View style={block(24, 11, radii.sm, bg)} />
+            </View>
+          ))}
+        </View>
+      </Card>
+    </Animated.View>
+  );
+}
+
+/**
+ * Streak row skeleton — placeholder heights match body + caption line
+ * heights so the card is exactly the same height as a real streak row.
+ */
 function StreakRowSkeleton({ index }: { index: number }) {
   const { colors, radii, spacing } = useTheme();
   const shimmer = useShimmerStyle(index);
@@ -42,11 +82,14 @@ function StreakRowSkeleton({ index }: { index: number }) {
   return (
     <Animated.View style={[{ marginBottom: spacing.sm }, shimmer]}>
       <Card style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-        <View style={block(32, 32, radii.md, bg)} />
-        <View style={{ flex: 1, gap: 6 }}>
-          <View style={block('52%', 13, radii.sm, bg)} />
-          <View style={block('34%', 10, radii.sm, bg)} />
+        {/* Emoji — fontSize 24 text has ~30px line height */}
+        <View style={block(30, 30, radii.md, bg)} />
+        {/* Text column — heights match body (16) + caption (12) line heights */}
+        <View style={{ flex: 1, gap: 5 }}>
+          <View style={block('55%', 16, radii.sm, bg)} />
+          <View style={block('36%', 12, radii.sm, bg)} />
         </View>
+        {/* Checkmark icon — matches Ionicons size={22} */}
         <View style={block(22, 22, radii.full, bg)} />
       </Card>
     </Animated.View>
@@ -55,12 +98,10 @@ function StreakRowSkeleton({ index }: { index: number }) {
 
 const STREAK_ROWS = 4;
 
-/** Full stats screen skeleton — mirrors the real layout so nothing shifts on reveal. */
 export function StatsSkeleton() {
   const { colors, spacing, radii } = useTheme();
   const bg = colors.border;
 
-  // Stat cards pulse together (indices 0-2), chart follows (3), streak rows cascade (4+)
   const cardShimmer0 = useShimmerStyle(0);
   const cardShimmer1 = useShimmerStyle(1);
   const cardShimmer2 = useShimmerStyle(2);
@@ -68,7 +109,7 @@ export function StatsSkeleton() {
 
   return (
     <View style={{ padding: spacing.lg }}>
-      {/* Stat cards row */}
+      {/* Stat cards */}
       <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xl }}>
         {([cardShimmer0, cardShimmer1, cardShimmer2] as const).map((shimmer, i) => (
           <Animated.View key={i} style={[{ flex: 1 }, shimmer]}>
@@ -81,16 +122,12 @@ export function StatsSkeleton() {
         ))}
       </View>
 
-      {/* Chart area */}
+      {/* Chart */}
       <Text variant="heading" style={{ marginBottom: spacing.md }}>Last 7 Days</Text>
-      <Animated.View style={[{ marginBottom: spacing.xl }, chartShimmer]}>
-        <Card style={block('100%', 168, radii.lg, bg)} />
-      </Animated.View>
-
-      {/* Streaks heading */}
-      <Text variant="heading" style={{ marginBottom: spacing.md }}>Streaks</Text>
+      <ChartSkeleton shimmer={chartShimmer} />
 
       {/* Streak rows */}
+      <Text variant="heading" style={{ marginBottom: spacing.md }}>Streaks</Text>
       {Array.from({ length: STREAK_ROWS }, (_, i) => (
         <StreakRowSkeleton key={i} index={i + 4} />
       ))}
