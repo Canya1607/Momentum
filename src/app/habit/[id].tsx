@@ -17,9 +17,9 @@ export default function HabitEditScreen() {
   const { colors, spacing, radii } = useTheme();
 
   const { data: habit } = useHabit(isNew ? null : id);
-  const { mutate: create, isPending: isCreating } = useCreateHabit();
-  const { mutate: update, isPending: isUpdating } = useUpdateHabit();
-  const { mutate: remove, isPending: isDeleting } = useDeleteHabit();
+  const { mutateAsync: createAsync, isPending: isCreating } = useCreateHabit();
+  const { mutateAsync: updateAsync, isPending: isUpdating } = useUpdateHabit();
+  const { mutateAsync: removeAsync, isPending: isDeleting } = useDeleteHabit();
 
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('💪');
@@ -36,16 +36,21 @@ export default function HabitEditScreen() {
     navigation.setOptions({ title: isNew ? 'New Habit' : 'Edit Habit' });
   }, [navigation, isNew]);
 
-  function handleSave() {
+  async function handleSave() {
     const trimmed = name.trim();
     if (!trimmed) {
       Alert.alert('Name required', 'Please enter a habit name.');
       return;
     }
-    if (isNew) {
-      create({ name: trimmed, emoji }, { onSuccess: () => router.back() });
-    } else {
-      update({ id, input: { name: trimmed, emoji } }, { onSuccess: () => router.back() });
+    try {
+      if (isNew) {
+        await createAsync({ name: trimmed, emoji });
+      } else {
+        await updateAsync({ id, input: { name: trimmed, emoji } });
+      }
+      router.back();
+    } catch {
+      Alert.alert('Error', 'Could not save habit. Please try again.');
     }
   }
 
@@ -55,7 +60,11 @@ export default function HabitEditScreen() {
       {
         text: 'Delete',
         style: 'destructive',
-        onPress: () => remove(id, { onSuccess: () => router.back() }),
+        onPress: () => {
+          removeAsync(id)
+            .then(() => router.back())
+            .catch(() => Alert.alert('Error', 'Could not delete habit.'));
+        },
       },
     ]);
   }
