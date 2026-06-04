@@ -1,9 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { HabitCard, HabitCardSkeleton, EmptyState, useHabits, useToggleCompletion, useDeleteHabit, seedDemoHabits, HABITS_KEY } from '@/features/habits';
 import { useEntitlement } from '@/features/subscription';
 import { useTheme } from '@/services/theme';
@@ -15,16 +19,14 @@ const SKELETON_COUNT = 3;
 const MIN_LOADING_MS = 900;
 
 export default function HabitListScreen() {
-  const { colors } = useTheme();
+  const { colors, spacing, radii } = useTheme();
   const router = useRouter();
-  const navigation = useNavigation();
   const { data: habits, isLoading } = useHabits();
   const { mutate: toggle } = useToggleCompletion();
   const { mutate: remove } = useDeleteHabit();
   const { data: entitlement } = useEntitlement();
   const queryClient = useQueryClient();
 
-  // Keep skeleton visible for at least MIN_LOADING_MS even if data arrives faster.
   const [minLoadDone, setMinLoadDone] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setMinLoadDone(true), MIN_LOADING_MS);
@@ -43,16 +45,18 @@ export default function HabitListScreen() {
     }
   }
 
-  // Set header add button from within the screen
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={handleAdd} style={{ marginRight: 4 }}>
-          <Ionicons name="add-circle-outline" size={28} color={colors.primary} />
-        </TouchableOpacity>
-      ),
+  // FAB press spring
+  const fabScale = useSharedValue(1);
+  const fabStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: fabScale.value }],
+  }));
+
+  function handleFabPress() {
+    fabScale.value = withSpring(0.88, { damping: 12, stiffness: 300 }, () => {
+      fabScale.value = withSpring(1, { damping: 8, stiffness: 200 });
     });
-  }, [navigation, atFreeLimit, colors.primary]);
+    handleAdd();
+  }
 
   if (showSkeleton) {
     return (
@@ -72,11 +76,9 @@ export default function HabitListScreen() {
       <FlatList
         data={habits}
         keyExtractor={item => item.id}
-        contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 96, flexGrow: 1 }}
         ListHeaderComponent={
-          <Text variant="display" style={{ marginBottom: 20 }}>
-            My Habits
-          </Text>
+          <Text variant="display" style={{ marginBottom: 20 }}>My Habits</Text>
         }
         ListEmptyComponent={
           <EmptyState
@@ -96,6 +98,37 @@ export default function HabitListScreen() {
           />
         )}
       />
+
+      {/* Floating action button */}
+      <Animated.View style={[styles.fab, { backgroundColor: colors.primary, borderRadius: radii.full }, fabStyle]}>
+        <TouchableOpacity
+          onPress={handleFabPress}
+          style={styles.fabInner}
+          activeOpacity={1}
+        >
+          <Ionicons name="add" size={30} color={colors.textInverse} />
+        </TouchableOpacity>
+      </Animated.View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 20,
+    width: 58,
+    height: 58,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  fabInner: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
