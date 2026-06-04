@@ -67,9 +67,9 @@ export default function StatsScreen() {
 
         {/* Summary row */}
         <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xl }}>
-          <StatCard icon="checkmark-circle-outline" label="Today" value={`${completedToday}/${totalHabits}`} />
-          <StatCard icon="flame-outline" label="Best streak" value={bestStreak} />
-          <StatCard icon="trophy-outline" label="Total done" value={totalCompletions} />
+          <StatCard icon="checkmark-circle-outline" label="Today" value={completedToday} suffix={`/${totalHabits}`} index={0} />
+          <StatCard icon="flame-outline" label="Best streak" value={bestStreak} index={1} />
+          <StatCard icon="trophy-outline" label="Total done" value={totalCompletions} index={2} />
         </View>
 
         {/* Weekly bar chart */}
