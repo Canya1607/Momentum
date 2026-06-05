@@ -51,59 +51,25 @@ const iconSvg = `
 </svg>
 `.trim();
 
-// ─── Splash SVG (1284×2778 — iPhone 14 Pro Max logical) ──────────────────────
+// ─── Splash SVG — small transparent-bg logo ──────────────────────────────────
+// The backgroundColor in app.json (#4f46e5) fills the full screen.
+// This image is just the centered logo element; expo-splash-screen
+// renders it centered on top of the background color.
 const splashSvg = `
-<svg width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="sbg" x1="0" y1="0" x2="0.4" y2="1">
-      <stop offset="0%" stop-color="#818cf8"/>
-      <stop offset="100%" stop-color="#4338ca"/>
-    </linearGradient>
-    <linearGradient id="sc" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.2)"/>
-      <stop offset="100%" stop-color="rgba(255,255,255,0.06)"/>
-    </linearGradient>
-  </defs>
-
-  <!-- Background -->
-  <rect width="1284" height="2778" fill="url(#sbg)"/>
-
-  <!-- Decorative circle behind icon -->
-  <circle cx="642" cy="1280" r="320" fill="url(#sc)"/>
-
-  <!-- Icon circle -->
-  <circle cx="642" cy="1280" r="210" fill="rgba(255,255,255,0.15)"/>
-
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer frosted ring -->
+  <circle cx="200" cy="200" r="168" fill="rgba(255,255,255,0.15)"/>
+  <!-- Inner circle -->
+  <circle cx="200" cy="200" r="120" fill="rgba(255,255,255,0.18)"/>
   <!-- Checkmark -->
   <polyline
-    points="510,1285 600,1385 780,1185"
+    points="118,202 172,262 288,144"
     fill="none"
     stroke="white"
-    stroke-width="56"
+    stroke-width="28"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
-
-  <!-- Wordmark -->
-  <text
-    x="642" y="1570"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-size="96"
-    font-weight="bold"
-    fill="white"
-    text-anchor="middle"
-    letter-spacing="4"
-  >Momentum</text>
-
-  <!-- Tagline -->
-  <text
-    x="642" y="1660"
-    font-family="-apple-system, Helvetica, sans-serif"
-    font-size="48"
-    fill="rgba(255,255,255,0.65)"
-    text-anchor="middle"
-    letter-spacing="2"
-  >build habits that stick</text>
 </svg>
 `.trim();
 
