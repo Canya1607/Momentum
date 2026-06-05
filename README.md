@@ -142,9 +142,25 @@ The README/code state clearly which is active. This is honest, and it shows I un
 # Web (fastest for browsing the UI)
 npx expo start --web
 
-# iOS simulator (required for real StoreKit / IAP testing)
+# iOS simulator — local dev (hot reload, Metro bundler)
 npx expo run:ios
 ```
+
+### Build a simulator artifact for handover (EAS)
+
+The `preview` profile in `eas.json` produces a `.app` bundle the reviewer can drag onto any iOS simulator — no signing, no device, no App Store account needed.
+
+```bash
+# One-time setup
+npm install -g eas-cli
+eas login          # log in with your Expo account
+eas init           # links this project; writes expo.extra.eas.projectId into app.json
+
+# Build (takes ~5 min on EAS servers)
+eas build -p ios --profile preview
+```
+
+EAS emails you a download link when the build finishes. Unzip it, then drag the `.app` onto an open iOS Simulator window to install.
 
 ### Test accounts
 

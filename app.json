@@ -8,9 +8,11 @@
     "scheme": "momentum",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.canya1607.momentum"
     },
     "android": {
+      "package": "com.canya1607.momentum",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
