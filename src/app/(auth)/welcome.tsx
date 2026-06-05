@@ -43,17 +43,20 @@ function HabitCardsVisual() {
   return (
     <View style={styles.habitContainer}>
       <View style={[styles.habitCard, styles.cardBackLeft, { backgroundColor: cardBg }]}>
-        <Text style={styles.cardEmoji}>📚</Text>
+        <Ionicons name="book-outline" size={26} color={colors.primary} />
         <Text style={[styles.cardName, { color: cardText }]}>Read</Text>
       </View>
 
       <View style={[styles.habitCard, styles.cardFront, { backgroundColor: cardBg }]}>
         <View style={styles.cardRow}>
           <View style={styles.cardRowLeft}>
-            <Text style={styles.cardEmoji}>🏃</Text>
+            <Ionicons name="walk-outline" size={26} color={colors.primary} />
             <View>
               <Text style={[styles.cardName, { color: cardText }]}>Run</Text>
-              <Text style={[styles.cardStreak, { color: streakText }]}>🔥 14 days</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2, gap: 3 }}>
+                <Ionicons name="flame" size={11} color="#f97316" />
+                <Text style={[styles.cardStreak, { color: streakText }]}>14 days</Text>
+              </View>
             </View>
           </View>
           <View style={[styles.cardCheck, { backgroundColor: colors.primary }]}>
@@ -63,7 +66,7 @@ function HabitCardsVisual() {
       </View>
 
       <View style={[styles.habitCard, styles.cardBackRight, { backgroundColor: cardBg }]}>
-        <Text style={styles.cardEmoji}>💧</Text>
+        <Ionicons name="water-outline" size={26} color={colors.primary} />
         <Text style={[styles.cardName, { color: cardText }]}>Hydrate</Text>
       </View>
     </View>
@@ -203,7 +206,6 @@ export default function WelcomeScreen() {
         scrollEventThrottle={16}
         onScroll={handleScroll}
         style={{ flex: 1 }}
-        contentContainerStyle={{ alignItems: 'center' }}
         renderItem={({ item }) => {
           const Visual = item.Visual;
           return (
@@ -257,7 +259,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1 },
 
-  slide: { flex: 1, justifyContent: 'center' },
+  slide: { height: '100%', justifyContent: 'center' },
   visualArea: { alignItems: 'center', justifyContent: 'center', paddingVertical: 20, marginBottom: 8 },
 
   bottom: { paddingTop: 8 },
@@ -297,9 +299,8 @@ const styles = StyleSheet.create({
   },
   cardRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cardRowLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  cardEmoji: { fontSize: 26 },
   cardName: { fontSize: 14, fontWeight: '600' },
-  cardStreak: { fontSize: 11, marginTop: 2 },
+  cardStreak: { fontSize: 11 },
   cardCheck: { width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
 
   // Stats bars

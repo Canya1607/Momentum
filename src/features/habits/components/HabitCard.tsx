@@ -4,8 +4,11 @@ import { computeStreak, today } from '@/shared/lib/date';
 import { Card } from '@/shared/ui/Card';
 import { Text } from '@/shared/ui/Text';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { impact, notification } from 'momentum-haptics';
 import { useCallback, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
@@ -45,6 +48,12 @@ export function HabitCard({ habit, onToggle, onPress, onDelete }: HabitCardProps
       withTiming(0.75, { duration: 70 }),
       withSpring(1, { damping: 20, stiffness: 300 }),
     );
+    // Completing a habit → success notification tap; unchecking → light impact
+    if (!isCompleted) {
+      notification('success');
+    } else {
+      impact('light');
+    }
     onToggle();
   }
 
@@ -109,19 +118,18 @@ export function HabitCard({ habit, onToggle, onPress, onDelete }: HabitCardProps
         <Animated.View style={cardStyle}>
           <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
             <Card style={styles.card}>
-              {/* Emoji badge */}
-              <View style={[styles.emoji, { backgroundColor: colors.background, borderRadius: radii.md }]}>
-                <Text style={styles.emojiText}>{habit.emoji}</Text>
+              {/* Icon badge */}
+              <View style={[styles.emoji, { backgroundColor: `${colors.primary}15`, borderRadius: radii.md }]}>
+                <Ionicons name={habit.emoji as IoniconName} size={24} color={colors.primary} />
               </View>
 
               {/* Name + streak */}
               <View style={styles.info}>
                 <Text variant="heading">{habit.name}</Text>
                 {streak > 0 ? (
-                  <Animated.View style={streakStyle}>
-                    <Text variant="caption">
-                      🔥 {streak} day{streak !== 1 ? 's' : ''}
-                    </Text>
+                  <Animated.View style={[streakStyle, { flexDirection: 'row', alignItems: 'center', gap: 3 }]}>
+                    <Ionicons name="flame" size={12} color="#f97316" />
+                    <Text variant="caption">{streak} day{streak !== 1 ? 's' : ''}</Text>
                   </Animated.View>
                 ) : (
                   <Text variant="caption" color={colors.textSecondary}>Start today</Text>
@@ -161,7 +169,6 @@ const styles = StyleSheet.create({
   container: { marginBottom: 10 },
   card: { flexDirection: 'row', alignItems: 'center' },
   emoji: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
-  emojiText: { fontSize: 26 },
   info: { flex: 1 },
   checkbox: { width: 28, height: 28, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   deleteBackground: { alignItems: 'flex-end', justifyContent: 'center', paddingRight: 20 },

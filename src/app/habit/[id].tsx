@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { confirmAlert, infoAlert } from '@/shared/lib/alert';
 import { useHabit, useCreateHabit, useUpdateHabit, useDeleteHabit } from '@/features/habits';
 import { useTheme } from '@/services/theme';
@@ -8,7 +9,20 @@ import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { Text } from '@/shared/ui/Text';
 
-const EMOJI_PRESETS = ['💪', '🏃', '📚', '🧘', '💧', '🌿', '✍️', '🎯', '⭐', '😴'];
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const ICON_PRESETS: IoniconName[] = [
+  'barbell-outline',
+  'walk-outline',
+  'book-outline',
+  'leaf-outline',
+  'water-outline',
+  'nutrition-outline',
+  'create-outline',
+  'trophy-outline',
+  'star-outline',
+  'moon-outline',
+];
 
 export default function HabitEditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -23,7 +37,7 @@ export default function HabitEditScreen() {
   const { mutateAsync: removeAsync, isPending: isDeleting } = useDeleteHabit();
 
   const [name, setName] = useState('');
-  const [emoji, setEmoji] = useState('💪');
+  const [emoji, setEmoji] = useState<string>('barbell-outline');
 
   // Populate form when editing an existing habit
   useEffect(() => {
@@ -76,25 +90,29 @@ export default function HabitEditScreen() {
       contentContainerStyle={{ padding: spacing.md }}
       keyboardShouldPersistTaps="handled"
     >
-      {/* Emoji picker */}
-      <Text variant="label" style={styles.label}>Emoji</Text>
-      <Card style={styles.emojiCard}>
-        <View style={styles.emojiRow}>
-          {EMOJI_PRESETS.map(e => (
+      {/* Icon picker */}
+      <Text variant="label" style={styles.label}>Icon</Text>
+      <Card style={styles.iconCard}>
+        <View style={styles.iconRow}>
+          {ICON_PRESETS.map(icon => (
             <TouchableOpacity
-              key={e}
-              onPress={() => setEmoji(e)}
+              key={icon}
+              onPress={() => setEmoji(icon)}
               style={[
-                styles.emojiOption,
+                styles.iconOption,
                 {
                   borderRadius: radii.md,
-                  backgroundColor: emoji === e ? colors.primary + '22' : 'transparent',
-                  borderColor: emoji === e ? colors.primary : 'transparent',
+                  backgroundColor: emoji === icon ? `${colors.primary}22` : 'transparent',
+                  borderColor: emoji === icon ? colors.primary : 'transparent',
                   borderWidth: 2,
                 },
               ]}
             >
-              <Text style={{ fontSize: 26 }}>{e}</Text>
+              <Ionicons
+                name={icon}
+                size={24}
+                color={emoji === icon ? colors.primary : colors.textSecondary}
+              />
             </TouchableOpacity>
           ))}
         </View>
@@ -144,8 +162,8 @@ export default function HabitEditScreen() {
 
 const styles = StyleSheet.create({
   label: { marginBottom: 8 },
-  emojiCard: { paddingVertical: 12 },
-  emojiRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  emojiOption: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
+  iconCard: { paddingVertical: 12 },
+  iconRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  iconOption: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   input: { fontSize: 16, borderWidth: 1.5 },
 });

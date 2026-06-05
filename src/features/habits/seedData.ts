@@ -34,7 +34,7 @@ function buildFreeHabits(): Habit[] {
     {
       id: 'seed-workout',
       name: 'Workout',
-      emoji: '💪',
+      emoji: 'barbell-outline',
       createdAt: daysAgoIso(30),
       // 7-day streak; visible every day in the weekly chart
       completions: completions(7, [9, 11, 14, 16, 20]),
@@ -42,7 +42,7 @@ function buildFreeHabits(): Habit[] {
     {
       id: 'seed-read',
       name: 'Read',
-      emoji: '📚',
+      emoji: 'book-outline',
       createdAt: daysAgoIso(20),
       // 3-day streak + scattered history
       completions: completions(3, [5, 8, 10, 13]),
@@ -50,7 +50,7 @@ function buildFreeHabits(): Habit[] {
     {
       id: 'seed-water',
       name: 'Drink water',
-      emoji: '💧',
+      emoji: 'water-outline',
       createdAt: daysAgoIso(15),
       // 0-day streak — missed today; some history shows in chart
       completions: completions(0, [4, 6, 8, 11, 13]),
@@ -63,7 +63,7 @@ function buildProHabits(): Habit[] {
     {
       id: 'seed-workout',
       name: 'Workout',
-      emoji: '💪',
+      emoji: 'barbell-outline',
       createdAt: daysAgoIso(90),
       // 62-day streak — > 2 months
       completions: completions(62, [64, 66, 70, 75, 80]),
@@ -71,7 +71,7 @@ function buildProHabits(): Habit[] {
     {
       id: 'seed-run',
       name: 'Morning run',
-      emoji: '🏃',
+      emoji: 'walk-outline',
       createdAt: daysAgoIso(60),
       // 30-day streak — ~1 month
       completions: completions(30, [32, 35, 38, 42, 47]),
@@ -79,7 +79,7 @@ function buildProHabits(): Habit[] {
     {
       id: 'seed-read',
       name: 'Read',
-      emoji: '📚',
+      emoji: 'book-outline',
       createdAt: daysAgoIso(45),
       // 14-day streak — 2 weeks
       completions: completions(14, [16, 18, 21, 25, 30]),
@@ -87,7 +87,7 @@ function buildProHabits(): Habit[] {
     {
       id: 'seed-meditate',
       name: 'Meditate',
-      emoji: '🧘',
+      emoji: 'leaf-outline',
       createdAt: daysAgoIso(30),
       // 7-day streak — 1 week
       completions: completions(7, [9, 12, 15, 19, 22]),
@@ -95,7 +95,7 @@ function buildProHabits(): Habit[] {
     {
       id: 'seed-water',
       name: 'Drink water',
-      emoji: '💧',
+      emoji: 'water-outline',
       createdAt: daysAgoIso(20),
       // 3-day streak
       completions: completions(3, [5, 7, 9, 12]),
@@ -103,7 +103,7 @@ function buildProHabits(): Habit[] {
     {
       id: 'seed-journal',
       name: 'Journal',
-      emoji: '✍️',
+      emoji: 'create-outline',
       createdAt: daysAgoIso(10),
       // 1-day streak — just started today
       completions: completions(1, [3, 5, 8]),
@@ -111,7 +111,7 @@ function buildProHabits(): Habit[] {
     {
       id: 'seed-sleep',
       name: 'Sleep 8 hrs',
-      emoji: '😴',
+      emoji: 'moon-outline',
       createdAt: daysAgoIso(25),
       // 0-day streak — broke the chain; history visible in chart
       completions: completions(0, [4, 6, 9, 12, 15, 18, 21]),

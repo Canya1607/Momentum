@@ -2,6 +2,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
+
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 import { useEntitlement } from '@/features/subscription';
 import { useStats, StatCard, WeeklyChart, StatsSkeleton } from '@/features/stats';
 import { useTheme } from '@/services/theme';
@@ -96,14 +98,19 @@ export default function StatsScreen() {
                 key={habit.id}
                 style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm, gap: spacing.sm }}
               >
-                <Text style={{ fontSize: 24 }}>{habit.emoji}</Text>
+                <Ionicons name={habit.emoji as IoniconName} size={24} color={colors.primary} />
                 <View style={{ flex: 1 }}>
                   <Text variant="body">{habit.name}</Text>
-                  <Text variant="caption" style={{ color: colors.textSecondary }}>
-                    {habit.streak > 0
-                      ? `🔥 ${habit.streak} day${habit.streak !== 1 ? 's' : ''}`
-                      : 'No streak yet'}
-                  </Text>
+                  {habit.streak > 0 ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                      <Ionicons name="flame" size={12} color="#f97316" />
+                      <Text variant="caption" style={{ color: colors.textSecondary }}>
+                        {habit.streak} day{habit.streak !== 1 ? 's' : ''}
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text variant="caption" style={{ color: colors.textSecondary }}>No streak yet</Text>
+                  )}
                 </View>
                 {habit.completedToday && (
                   <Ionicons name="checkmark-circle" size={22} color={colors.success} />

@@ -4,7 +4,8 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "momentum-haptics": ["./modules/momentum-haptics/src/index"]
     }
   },
   "include": [

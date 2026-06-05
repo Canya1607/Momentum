@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["MomentumHapticsModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.momentumhaptics.MomentumHapticsModule"]
+  }
+}

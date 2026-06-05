@@ -60,7 +60,7 @@ export default function HabitListScreen() {
 
   if (showSkeleton) {
     return (
-      <Screen padded={false}>
+      <Screen padded={false} edges={['top']}>
         <View style={{ padding: spacing.lg }}>
           <Text variant="display" style={{ marginBottom: spacing.xl }}>Habits</Text>
           {Array.from({ length: SKELETON_COUNT }, (_, i) => (
@@ -72,7 +72,7 @@ export default function HabitListScreen() {
   }
 
   return (
-    <Screen padded={false}>
+    <Screen padded={false} edges={['top']}>
       <FlatList
         data={habits}
         keyExtractor={item => item.id}
@@ -82,6 +82,7 @@ export default function HabitListScreen() {
           flexGrow: 1,
           justifyContent: habits?.length === 0 ? 'center' : 'flex-start',
         }}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           habits && habits.length > 0
             ? <Text variant="display" style={{ marginBottom: spacing.xl }}>Habits</Text>
@@ -123,7 +124,7 @@ export default function HabitListScreen() {
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
-    bottom: 24,
+    bottom: 16,
     right: 20,
     width: 58,
     height: 58,

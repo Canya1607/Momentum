@@ -1,0 +1,9 @@
+{
+  "name": "momentum-haptics",
+  "version": "1.0.0",
+  "description": "Native haptic feedback for Momentum — wraps UIImpactFeedbackGenerator (iOS) and VibrationEffect (Android).",
+  "main": "src/MomentumHapticsModule",
+  "exports": {
+    ".": "./src/MomentumHapticsModule"
+  }
+}

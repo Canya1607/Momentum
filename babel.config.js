@@ -3,7 +3,7 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-      ['module-resolver', { root: ['.'], alias: { '@': './src' } }],
+      ['module-resolver', { root: ['.'], alias: { '@': './src', 'momentum-haptics': './modules/momentum-haptics/src/index' } }],
     ],
   };
 };

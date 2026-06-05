@@ -79,7 +79,7 @@ export default function PaywallScreen() {
 
   if (entitlement === 'Pro') {
     return (
-      <Screen padded>
+      <Screen padded edges={['bottom']}>
         <View style={styles.alreadyProContainer}>
           <Text variant="heading" style={{ color: colors.primary, marginBottom: spacing.sm, textAlign: 'center' }}>
             You're already a Pro member ✓
@@ -94,7 +94,7 @@ export default function PaywallScreen() {
   }
 
   return (
-    <Screen padded={false} scroll>
+    <Screen padded={false} scroll edges={['bottom']}>
       <Animated.View style={[{ paddingHorizontal: spacing.lg, paddingTop: spacing.xl, paddingBottom: spacing.xxl }, entranceStyle]}>
 
         {/* Hero */}
