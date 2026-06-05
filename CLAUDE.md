@@ -1,4 +1,4 @@
-# CLAUDE.md — Project context for Claude Code
+# CLAUDE.md — Project context
 
 > Read this fully before writing code. This is a **3-day portfolio demo** for a senior/lead React Native interview. The reviewer is a CTO at a subscription DTC company. Priorities, in order: **(1) finishable in 3 days, (2) clean architecture, (3) polish over feature count.** Resist scope creep aggressively.
 
