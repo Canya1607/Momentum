@@ -60,7 +60,7 @@ export default function SettingsScreen() {
   }
 
   return (
-    <Screen padded scroll>
+    <Screen padded scroll style={{ paddingBottom: spacing.xxl * 2 }}>
       <Text variant="display" style={{ marginBottom: spacing.xl }}>Settings</Text>
 
       {/* Appearance */}
