@@ -1,59 +1,61 @@
-# Momentum — Habit Tracker (Portfolio Demo)
+# Momentum — Habit Tracker
 
-A small, polished **universal React Native app (Expo)** built to demonstrate senior/lead-level engineering for a subscription DTC company. Runs on **iOS, Android, and Web from one codebase**, with a real **subscription paywall** flow.
+A small, polished **universal React Native app (Expo)** demonstrating a production-grade subscription flow, feature-based architecture, and smooth Reanimated animations. Runs on **iOS, Android, and Web from one codebase**.
 
-> This README documents *why* each decision was made — which is the part a CTO actually reads.
-
----
-
-## 1. Why this project exists (context)
-
-I'm interviewing for a Senior/Lead React Native role at a company that ships **B2C subscription products (eCommerce / DTC) as connected web + mobile apps**, one after another. My real production work is under NDA or no longer live on the stores, so this is a clean-room demo that proves I can build **exactly their stack**: Expo, TypeScript, universal codebase, subscriptions, clean architecture, and a real release artifact they can run.
-
-**Goal:** a CTO can (a) run an iOS build on the simulator, (b) read clean, well-architected code, and (c) watch a short video of a real purchase flow — and conclude "this person operates at senior/lead level on our stack."
+> This README documents *why* each decision was made, not just what was built.
 
 ---
 
-## 2. Business perspective — what this proves and why it matters
+## 1. What this project is
 
-This is the framing for the one-page write-up I send with the project. Each technical choice maps to a business outcome:
+Momentum is a habit tracker with a freemium subscription model. The goal was to build something genuinely complete — correct entitlement logic, persistent local data, per-user isolation, polished animations, and a real release artifact — rather than a toy UI demo.
 
-- **Universal codebase (one RN codebase → iOS + Android + Web):** lower cost per product, faster time-to-market, consistent UX across platforms — directly relevant to a company shipping many products back-to-back.
-- **Subscription paywall + entitlements:** subscriptions are the company's entire revenue model. Demonstrating a correct purchase + entitlement flow (no double-charging, restore support, server-side-truth mindset) shows I understand their core business risk, not just UI.
-- **Clean feature-based architecture + shared layer:** scales across a *portfolio* of apps, not just one — shows I think about reuse and team velocity, which is what "shipped one after another" demands.
-- **Release-ready (simulator build + release pipeline awareness):** I can ship, not just code — provisioning, builds, OTA, staged rollout are part of how I think.
-- **Production-health mindset (crash reporting, performance):** I own apps in production, not just in dev.
+**Free tier:** track up to 3 habits, daily check-off, current streak.  
+**Pro tier:** unlimited habits, stats screen with animated charts, custom theme.
 
-**The honesty line:** the purchase flow uses a local StoreKit Configuration File (no App Store publishing). Where something is mocked for the demo, the README and code say so explicitly. Senior reviewers respect "real architecture + honest about the demo boundary" far more than a polished lie.
+The purchase flow uses a local StoreKit Configuration File (no App Store publishing required). Where something is mocked for the demo, the README and code say so explicitly.
 
 ---
 
-## 3. "Expo vs React Native" — the framing
+## 2. Why these technical choices
 
-The employer leans React Native in conversation. Key point I lead with: **an Expo app IS a React Native app** — Expo is RN plus tooling/SDK, not a separate framework. I discuss everything in RN terms (New Architecture, JSI, native layer, state, performance). If asked, I can run `npx expo prebuild` to show the real `ios/`/`android/` projects, and (stretch goal) I include one **custom native module written with the Expo Modules API** (real Swift/Kotlin) to prove native-level depth.
+Each decision maps to a concrete outcome:
+
+- **Universal codebase (iOS + Android + Web from one repo):** lower maintenance surface, consistent UX, faster iteration.
+- **Subscription paywall + entitlements abstracted behind a service interface:** UI code never talks directly to StoreKit or RevenueCat. Swapping implementations (mock ↔ real) is a one-line config change.
+- **Feature-based architecture + shared layer:** each feature is self-contained; `shared/` and `services/` are extractable into a monorepo package.
+- **React Query over local async data:** the data service is async and swappable — the same query/mutation code works whether the source is AsyncStorage or a remote API.
+- **Secure token storage:** session token in `expo-secure-store` (Keychain/Keystore), never AsyncStorage.
 
 ---
 
-## 4. Tech stack (RN-framed)
+## 3. Expo and React Native
+
+**An Expo app is a React Native app.** Expo is RN plus a managed toolchain and SDK — not a separate framework. Running `npx expo prebuild` ejects to a real `ios/`/`android/` project. The `momentum-haptics` native module in `modules/` (real Swift + Kotlin, built with the Expo Modules API) demonstrates that native-layer work is fully accessible.
+
+---
+
+## 4. Tech stack
 
 | Concern | Choice | Why |
 |---|---|---|
-| Framework | React Native via Expo (default `create-expo-app`, New Architecture on by default) | Current best practice; full native access via CNG/prebuild |
-| Language | TypeScript | Type safety, senior expectation |
+| Framework | React Native via Expo (New Architecture on by default) | Current best practice; full native access via CNG/prebuild |
+| Language | TypeScript strict | Type safety throughout |
 | Navigation | Expo Router (file-based, built on React Navigation) | Universal routing + automatic deep linking + web URLs |
-| Server state | React Query (TanStack Query) over an async data service | Server/client state split; caching, the right pattern |
-| Client state | Zustand + local `useState` | Lightweight; no Redux ceremony for a small app |
-| Persistence | AsyncStorage (or expo-sqlite if time) behind a data service | Local-first; React Query wraps it as a swappable async source |
+| Server state | React Query (TanStack Query) over an async data service | Correct server/client state split; caching; swappable backend |
+| Client state | Zustand + local `useState` | Lightweight; no Redux ceremony |
+| Persistence | AsyncStorage behind a data service | Local-first; React Query wraps it as a swappable async source |
 | Secure storage | expo-secure-store (Keychain/Keystore) | Session token stored correctly, not in AsyncStorage |
-| Animation | react-native-reanimated (UI-thread worklets) | My strength; smooth check-offs, streaks, transitions |
-| Subscriptions | StoreKit Configuration File + entitlement service abstraction (RevenueCat OR expo-iap behind it) | Real local purchase flow, no publishing required |
-| Theming | Design tokens + ThemeProvider | Components read tokens, never hardcode — portfolio-of-apps mindset |
+| Animation | react-native-reanimated (UI-thread worklets) | Smooth check-offs, streaks, transitions without JS-thread jank |
+| Subscriptions | StoreKit Configuration File + entitlement service abstraction | Real local purchase flow; no publishing required |
+| Theming | Design tokens + ThemeProvider | Components read tokens, never hardcode — supports multiple themes |
+| Native module | Expo Modules API (Swift + Kotlin) | Demonstrates native-layer depth |
 
 ---
 
-## 5. Architecture decisions (the part to read)
+## 5. Architecture
 
-**Feature-based, not type-based folders.** Each feature owns its components, hooks, API, and types. `shared/` holds truly reusable pieces; `services/` holds external integrations behind a single interface. This scales to many features and to a team — and the `shared/` + `services/` layers are what you'd extract into a monorepo package to reuse across a portfolio of apps.
+**Feature-based, not type-based folders.** Each feature owns its components, hooks, API, and types. `shared/` holds truly reusable pieces; `services/` holds external integrations behind a single interface.
 
 ```
 src/
@@ -82,35 +84,37 @@ src/
     purchases/              # PurchasesService interface + mock + storekit impls
     theme/                  # tokens, ThemeProvider, themeStore
   config/                   # DEMO_MODE flag
+modules/
+  momentum-haptics/         # custom native module (Swift + Kotlin)
 ```
 
-**Server vs client state split.** React Query manages all "data" (habits, stats) — even though the source is local for the demo, it's behind an async service so the pattern is identical to a real backend. Zustand handles session/UI state. `useState` stays local. This deliberately avoids the anti-pattern of dumping everything in one global store.
+**Server vs client state split.** React Query manages all data (habits, stats) — even though the source is local, it sits behind an async service so the pattern is identical to a real backend. Zustand handles session/UI state. `useState` stays local. This avoids the anti-pattern of dumping everything in one global store.
 
-**Entitlement abstraction + demo-mode toggle.** The paywall talks to a `purchases` service interface (`getEntitlement()`, `purchase()`, `restore()`), never directly to StoreKit/RevenueCat. Two implementations sit behind it:
-1. **Real:** StoreKit Configuration File flow (shown working in the video, run locally — no publishing).
-2. **Demo-mode mock:** a local toggle that flips the entitlement so the *handed-over* simulator build also shows paywall → unlock visually.
-The README/code state clearly which is active. This is honest, and it shows I understand the production architecture.
+**Entitlement abstraction.** The paywall talks to a `PurchasesService` interface (`getEntitlement()`, `purchase()`, `restore()`), never directly to StoreKit or RevenueCat. Two implementations sit behind it:
+1. **`storekit.ts`** — real StoreKit Configuration File flow (run via `npx expo run:ios`).
+2. **`mock.ts`** — a local toggle that flips entitlement instantly; used in the handed-over simulator build so the purchase flow is demonstrable without an App Store account.
 
-**Secure token storage.** Session token in `expo-secure-store` (Keychain/Keystore), never AsyncStorage. Auth is a simple mocked sign-in for the demo, but structured to swap in real OAuth/PKCE — noted in code.
-
-**Theming via tokens.** Components read design tokens, never hardcode colors/spacing. One product = one theme override. This is the portfolio-of-apps mindset in miniature.
-
----
-
-## 6. Feature scope — ruthlessly small (this is the whole point)
-
-**Free tier:** up to 3 habits, daily check-off, current streak.
-**Premium ("Momentum Pro"):** unlimited habits, statistics screen (simple charts), custom theme.
-
-**MVP screens:** onboarding carousel → sign-in → habit list → add/edit habit → stats (gated) → paywall → settings (avatar, restore, demo-mode toggle, sign out).
-
-**Reanimated touches:** spring check-off animation, streak indicator, swipe-to-delete row, paywall entrance.
-
-**Out of scope (resist!):** social features, real backend, push reminders, onboarding flows, multiple themes beyond one. Polish the small thing; don't add features.
+Switching between them is one line in `src/config/index.ts`:
+```ts
+export const DEMO_MODE = true; // false → real StoreKit
+```
 
 ---
 
-## 7. Three-day build plan
+## 6. Feature scope
+
+**Free tier:** up to 3 habits, daily check-off, current streak.  
+**Pro tier:** unlimited habits, statistics screen (animated charts), custom theme.
+
+**Screens:** onboarding carousel → sign-in → habit list → add/edit habit → stats (gated) → paywall → settings (avatar, restore, demo-mode toggle, sign out).
+
+**Reanimated:** spring check-off, streak badge, swipe-to-delete row, paywall entrance, onboarding pagination dots.
+
+**Explicitly out of scope:** real backend, social features, push reminders, multiple themes. Small and polished beats large and half-finished.
+
+---
+
+## 7. Build timeline
 
 **Day 1 — Foundation + core feature**
 - Scaffold with `create-expo-app`, set up folders, TypeScript, Expo Router with `(auth)`/`(tabs)`.
@@ -124,17 +128,16 @@ The README/code state clearly which is active. This is honest, and it shows I un
 - Mocked auth flow with token in expo-secure-store; per-user data isolation.
 - Settings screen (restore, demo toggle, sign out, avatar upload).
 
-**Day 3 — Polish + package + ship**
+**Day 3 — Polish + package**
 - Reanimated animations: spring check-off, streak badge, swipe-to-delete, paywall entrance, onboarding dots.
 - Stats screen: animated weekly bar chart + streak leaderboard.
-- Onboarding carousel (welcome screen) + polished sign-in with context-aware copy.
-- `eas build -p ios --profile preview` (simulator build for handover).
-- Record 2–3 min video showing the real StoreKit purchase flow.
-- *(Stretch: one custom native module via Expo Modules API.)*
+- Onboarding carousel + polished sign-in with context-aware copy.
+- `momentum-haptics` native module (Expo Modules API, Swift + Kotlin).
+- `eas build -p ios --profile preview` simulator build for handover.
 
 ---
 
-## 8. Running & testing the app
+## 8. Running & testing
 
 ### Start the app
 
@@ -146,25 +149,25 @@ npx expo start --web
 npx expo run:ios
 ```
 
-### Build a simulator artifact for handover (EAS)
+### Build a simulator artifact (EAS)
 
-The `preview` profile in `eas.json` produces a `.app` bundle the reviewer can drag onto any iOS simulator — no signing, no device, no App Store account needed.
+The `preview` profile in `eas.json` produces a `.app` bundle that can be dragged onto any iOS Simulator — no signing, no device, no App Store account needed.
 
 ```bash
 # One-time setup
 npm install -g eas-cli
-eas login          # log in with your Expo account
-eas init           # links this project; writes expo.extra.eas.projectId into app.json
+eas login
+eas init       # links the project; writes projectId into app.json
 
-# Build (takes ~5 min on EAS servers)
+# Build (~5 min on EAS servers)
 eas build -p ios --profile preview
 ```
 
-EAS emails you a download link when the build finishes. Unzip it, then drag the `.app` onto an open iOS Simulator window to install.
+EAS emails a download link when the build finishes. Unzip it, then drag the `.app` onto an open Simulator window to install.
 
 ### Test accounts
 
-Any email address works — the sign-in is mocked. Habits, streaks, and stats are **isolated per email address**, so switching accounts gives a clean slate.
+Any email address works — sign-in is mocked. Habits, streaks, and stats are **isolated per email address**.
 
 | Email | Suggested use |
 |---|---|
@@ -177,42 +180,30 @@ Sign out from **Settings → Account → Sign Out**, then sign in with a differe
 
 ### Developer tools (Settings → Developer)
 
-These tools are only visible when `DEMO_MODE = true` (the default shipped config):
+Visible only when `DEMO_MODE = true` (the default):
 
 | Tool | What it does |
 |---|---|
-| **Set Free / Set Pro** | Flips the mock entitlement instantly — no paywall needed |
-| **3 Free habits** | Seeds 3 habits with varied streaks (7d, 3d, 0d) so the habit list is populated |
-| **7 Pro habits** | Seeds 7 habits with streaks from 62 days down to 0 — makes the stats screen and charts meaningful |
+| **Set Free / Set Pro** | Flips the mock entitlement instantly |
+| **3 Free habits** | Seeds 3 habits with varied streaks (7d, 3d, 0d) |
+| **7 Pro habits** | Seeds 7 habits with streaks from 62 days down to 0 |
 
-### Recommended demo flow
+### Recommended walkthrough
 
 1. Sign in as `alice@test.com`
 2. Settings → Developer → **Set Pro** + **7 Pro habits**
-3. Browse the habit list (swipe a card left to delete, tap the checkbox to see the spring animation)
-4. Open **Stats** — see the weekly bar chart animate in and the streak leaderboard
+3. Browse the habit list — swipe left to delete, tap a checkbox to see the spring animation
+4. Open **Stats** — watch the weekly bar chart animate in and the streak leaderboard load
 5. Sign out → sign in as `bob@test.com` → confirm empty habit list (data isolation)
 6. Settings → Developer → **Set Free** + **3 Free habits**
 7. Try adding a 4th habit — hits the free-tier limit → paywall opens
-8. On the paywall, tap **Get Pro** to see the purchase flow → unlock
+8. Tap **Get Pro** to see the purchase flow → unlock
 
 ---
 
 ## 9. Key constraints / gotchas
 
-- **IAP needs a dev build, NOT Expo Go.** Use `npx expo run:ios`. Expo Go can't run native IAP code.
-- **StoreKit Configuration File = no publishing, no paid account needed.** Define products locally in a `.storekit` file in Xcode; uncheck "Sync with App Store Connect."
-- **The `.storekit` config applies via the Xcode run scheme** — a standalone handed-over `.app` won't auto-use it. So: show the *real* purchase in the video (run locally), and rely on the *demo-mode toggle* for the handed-over build.
-- **Simulator build for handover:** `eas build -p ios --profile preview` with `"ios": { "simulator": true }` → unzip → drag `.app` onto the simulator. No signing needed.
-- **No localStorage / browser storage assumptions** — use AsyncStorage/SecureStore.
-- **Scope creep is the only real risk.** Finish-first mentality.
-
----
-
-## 10. Deliverable package to send the CTO
-
-- [ ] EAS **iOS simulator build** (`.app` they can run themselves)
-- [ ] Public **GitHub repo** (clean architecture, this README)
-- [ ] **2–3 min video** showing the real StoreKit purchase → unlock flow
-- [ ] **One-page doc**: what I built here + written write-ups of MEV (real-time video, 16 concurrent streams, Twilio/WebSocket) and effie> (camera + TensorFlow/OpenCV)
-
+- **IAP needs a dev build, not Expo Go.** Use `npx expo run:ios`. Expo Go cannot load native IAP modules.
+- **StoreKit Configuration File = no publishing, no paid developer account needed.** Define products locally in a `.storekit` file in Xcode; uncheck "Sync with App Store Connect."
+- **The `.storekit` config is tied to the Xcode run scheme** — a handed-over `.app` won't auto-use it. Set `DEMO_MODE = true` for the handed-over build; run locally via `npx expo run:ios` to demonstrate the real purchase flow.
+- **No localStorage / browser storage** — AsyncStorage and SecureStore everywhere.
