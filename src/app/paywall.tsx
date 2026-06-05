@@ -164,15 +164,26 @@ interface OfferingCardProps {
 }
 
 function OfferingCard({ offering, selected, onSelect }: OfferingCardProps) {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radii } = useTheme();
+  const hasBadge = !!offering.badge;
+
   return (
     <TouchableOpacity onPress={onSelect} activeOpacity={0.8}>
       <Card
         style={{
-          borderColor: selected ? colors.primary : colors.border,
-          borderWidth: selected ? 2 : 1,
+          borderColor: selected ? colors.primary : hasBadge ? `${colors.primary}55` : colors.border,
+          borderWidth: selected || hasBadge ? 2 : 1,
         }}
       >
+        {/* Badge pill */}
+        {hasBadge && (
+          <View style={[styles.badge, { backgroundColor: colors.primary, borderRadius: radii.sm }]}>
+            <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700', letterSpacing: 0.6 }}>
+              {offering.badge}
+            </Text>
+          </View>
+        )}
+
         <View style={styles.offeringRow}>
           <View style={{ flex: 1, marginRight: spacing.md }}>
             <Text variant="heading" style={{ color: colors.text, marginBottom: 2 }}>
@@ -182,18 +193,22 @@ function OfferingCard({ offering, selected, onSelect }: OfferingCardProps) {
               {offering.description}
             </Text>
           </View>
-          <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 6 }}>
-            <Text variant="label" style={{ color: colors.primary, fontWeight: '700' }}>
-              {offering.price}
-            </Text>
-            {selected && (
-              <Ionicons
-                name="checkmark-circle"
-                size={18}
-                color={colors.primary}
-                style={{ marginTop: 4 }}
-              />
+
+          <View style={{ alignItems: 'flex-end', gap: 2 }}>
+            {/* Crossed-out monthly-equivalent price */}
+            {offering.strikethroughPrice && (
+              <Text variant="caption" style={{ color: colors.textSecondary, textDecorationLine: 'line-through' }}>
+                {offering.strikethroughPrice}
+              </Text>
             )}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text variant="label" style={{ color: colors.primary, fontWeight: '700' }}>
+                {offering.price}
+              </Text>
+              {selected && (
+                <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
+              )}
+            </View>
           </View>
         </View>
       </Card>
@@ -206,4 +221,5 @@ const styles = StyleSheet.create({
   featureRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconBadge: { width: 36, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   offeringRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3, marginBottom: 10 },
 });

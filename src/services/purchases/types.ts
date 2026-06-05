@@ -5,6 +5,10 @@ export interface Offering {
   title: string;
   description: string;
   price: string; // formatted display string, e.g. "$4.99/month"
+  /** Monthly-equivalent price to show crossed out on annual plans (e.g. "$59.88 / year"). */
+  strikethroughPrice?: string;
+  /** Short badge label displayed on highlighted offerings (e.g. "BEST VALUE"). */
+  badge?: string;
 }
 
 export type PurchaseResult =
