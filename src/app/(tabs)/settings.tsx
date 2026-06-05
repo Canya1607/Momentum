@@ -1,5 +1,5 @@
 import { DEMO_MODE } from '@/config';
-import { useAuth } from '@/features/auth';
+import { useAuth, AvatarPicker } from '@/features/auth';
 import { HABITS_KEY, seedDemoHabits } from '@/features/habits';
 import { ENTITLEMENT_KEY, useEntitlement, useRestorePurchases } from '@/features/subscription';
 import { setMockEntitlement } from '@/services/purchases';
@@ -166,14 +166,19 @@ export default function SettingsScreen() {
       <View style={{ paddingBottom: spacing.xl }}>
         <SectionLabel label="Account" />
         <Card>
-          {!!email && (
-            <Text variant="body" style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
-              Signed in as{' '}
-              <Text variant="body" style={{ color: colors.text, fontWeight: '600' }}>
-                {email}
-              </Text>
-            </Text>
-          )}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md }}>
+            <AvatarPicker />
+            {!!email && (
+              <View style={{ flex: 1 }}>
+                <Text variant="caption" style={{ color: colors.textSecondary, marginBottom: 2 }}>
+                  Signed in as
+                </Text>
+                <Text variant="body" style={{ color: colors.text, fontWeight: '600' }} numberOfLines={1}>
+                  {email}
+                </Text>
+              </View>
+            )}
+          </View>
           <Button
             label="Sign Out"
             variant="secondary"
