@@ -119,7 +119,7 @@ function buildProHabits(): Habit[] {
   ];
 }
 
-export async function seedDemoHabits(plan: 'free' | 'pro'): Promise<void> {
-  const habits = plan === 'pro' ? buildProHabits() : buildFreeHabits();
+export async function seedDemoHabits(plan: 'Free' | 'Pro'): Promise<void> {
+  const habits = plan === 'Pro' ? buildProHabits() : buildFreeHabits();
   await setJsonItem(habitsStorageKey(), habits);
 }

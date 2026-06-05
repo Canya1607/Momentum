@@ -1,4 +1,4 @@
-export type Entitlement = 'free' | 'pro';
+export type Entitlement = 'Free' | 'Pro';
 
 export interface Offering {
   productId: string;

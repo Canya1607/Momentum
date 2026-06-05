@@ -21,8 +21,8 @@ import type { Entitlement, Offering, PurchaseResult, PurchasesService } from './
 export const storekitPurchasesService: PurchasesService = {
   async getEntitlement(): Promise<Entitlement> {
     // production: const info = await Purchases.getCustomerInfo();
-    // return info.entitlements.active['pro'] ? 'pro' : 'free';
-    return 'free';
+    // return info.entitlements.active['pro'] ? 'Pro' : 'Free';
+    return 'Free';
   },
 
   async getOfferings(): Promise<Offering[]> {
@@ -33,7 +33,7 @@ export const storekitPurchasesService: PurchasesService = {
 
   async purchase(_productId: string): Promise<PurchaseResult> {
     // production: const { customerInfo } = await Purchases.purchaseStoreProduct(product);
-    // return customerInfo.entitlements.active['pro'] ? { status: 'purchased' } : { status: 'cancelled' };
+    // return customerInfo.entitlements.active['Pro'] ? { status: 'purchased' } : { status: 'cancelled' };
     return { status: 'error', message: 'StoreKit not configured — set DEMO_MODE = true' };
   },
 

@@ -77,7 +77,7 @@ export default function PaywallScreen() {
     }
   }
 
-  if (entitlement === 'pro') {
+  if (entitlement === 'Pro') {
     return (
       <Screen padded>
         <View style={styles.alreadyProContainer}>

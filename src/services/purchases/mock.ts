@@ -34,7 +34,7 @@ export async function setMockEntitlement(value: Entitlement): Promise<void> {
 export const mockPurchasesService: PurchasesService = {
   async getEntitlement(): Promise<Entitlement> {
     const stored = await getItem(ENTITLEMENT_KEY);
-    return stored === 'pro' ? 'pro' : 'free';
+    return stored === 'Pro' ? 'Pro' : 'Free';
   },
 
   async getOfferings(): Promise<Offering[]> {
@@ -42,7 +42,7 @@ export const mockPurchasesService: PurchasesService = {
   },
 
   async purchase(_productId: string): Promise<PurchaseResult> {
-    await setItem(ENTITLEMENT_KEY, 'pro');
+    await setItem(ENTITLEMENT_KEY, 'Pro');
     return { status: 'purchased' };
   },
 

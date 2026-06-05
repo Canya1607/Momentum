@@ -34,7 +34,7 @@ export default function HabitListScreen() {
   }, []);
   const showSkeleton = isLoading || !minLoadDone;
 
-  const isPro = entitlement === 'pro';
+  const isPro = entitlement === 'Pro';
   const atFreeLimit = !isPro && (habits?.length ?? 0) >= FREE_HABIT_LIMIT;
 
   function handleAdd() {
@@ -91,7 +91,7 @@ export default function HabitListScreen() {
           <EmptyState
             onAdd={handleAdd}
             onSeedData={async () => {
-              await seedDemoHabits(isPro ? 'pro' : 'free');
+              await seedDemoHabits(isPro ? 'Pro' : 'Free');
               queryClient.invalidateQueries({ queryKey: HABITS_KEY });
             }}
           />

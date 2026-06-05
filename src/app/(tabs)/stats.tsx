@@ -25,7 +25,7 @@ export default function StatsScreen() {
   }, []);
   const showSkeleton = isLoading || !minLoadDone;
 
-  if (showSkeleton && entitlement === 'pro') {
+  if (showSkeleton && entitlement === 'Pro') {
     return (
       <Screen padded={false} scroll>
         <Text variant="display" style={{ margin: spacing.lg, marginBottom: 0 }}>Stats</Text>
@@ -34,7 +34,7 @@ export default function StatsScreen() {
     );
   }
 
-  if (entitlement !== 'pro') {
+  if (entitlement !== 'Pro') {
     return (
       <Screen padded>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md }}>

@@ -1,16 +1,16 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { View, StyleSheet } from 'react-native';
+import { DEMO_MODE } from '@/config';
 import { useAuth } from '@/features/auth';
-import { seedDemoHabits, HABITS_KEY } from '@/features/habits';
-import { useEntitlement, useRestorePurchases, ENTITLEMENT_KEY } from '@/features/subscription';
+import { HABITS_KEY, seedDemoHabits } from '@/features/habits';
+import { ENTITLEMENT_KEY, useEntitlement, useRestorePurchases } from '@/features/subscription';
 import { setMockEntitlement } from '@/services/purchases';
 import { useTheme, useThemeStore } from '@/services/theme';
-import { DEMO_MODE } from '@/config';
 import { confirmAlert, infoAlert } from '@/shared/lib/alert';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { Screen } from '@/shared/ui/Screen';
 import { Text } from '@/shared/ui/Text';
+import { useQueryClient } from '@tanstack/react-query';
+import { StyleSheet, View } from 'react-native';
 
 function SectionLabel({ label }: { label: string }) {
   const { colors, spacing } = useTheme();
@@ -33,21 +33,21 @@ export default function SettingsScreen() {
   const { preference, setPreference } = useThemeStore();
 
   async function handleSetFree() {
-    await setMockEntitlement('free');
+    await setMockEntitlement('Free');
     queryClient.invalidateQueries({ queryKey: ENTITLEMENT_KEY });
     infoAlert('Reset', 'Subscription reset to Free.');
   }
 
   async function handleSetPro() {
-    await setMockEntitlement('pro');
+    await setMockEntitlement('Pro');
     queryClient.invalidateQueries({ queryKey: ENTITLEMENT_KEY });
     infoAlert('Upgraded', 'Subscription set to Pro.');
   }
 
-  async function handleSeed(plan: 'free' | 'pro') {
+  async function handleSeed(plan: 'Free' | 'Pro') {
     await seedDemoHabits(plan);
     queryClient.invalidateQueries({ queryKey: HABITS_KEY });
-    infoAlert('Seeded', `${plan === 'pro' ? '7' : '3'} demo habits loaded with varied streaks.`);
+    infoAlert('Seeded', `${plan === 'Pro' ? '7' : '3'} demo habits loaded with varied streaks.`);
   }
 
   async function handleRestore() {
@@ -60,7 +60,7 @@ export default function SettingsScreen() {
   }
 
   return (
-    <Screen padded scroll style={{ paddingBottom: spacing.xxl * 2 }}>
+    <Screen padded scroll style={{ paddingBottom: spacing.xxl }}>
       <Text variant="display" style={{ marginBottom: spacing.xl }}>Settings</Text>
 
       {/* Appearance */}
@@ -94,8 +94,8 @@ export default function SettingsScreen() {
         <Card>
           <Text variant="body" style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
             Current plan:{' '}
-            <Text variant="body" style={{ color: entitlement === 'pro' ? colors.primary : colors.text, fontWeight: '600' }}>
-              {entitlement === 'pro' ? 'Momentum Pro' : entitlement ?? '…'}
+            <Text variant="body" style={{ color: entitlement === 'Pro' ? colors.primary : colors.text, fontWeight: '600' }}>
+              {entitlement === 'Pro' ? 'Momentum Pro' : entitlement === 'Free' ? 'Free' : '…'}
             </Text>
           </Text>
           <Button
@@ -122,18 +122,18 @@ export default function SettingsScreen() {
               <View style={{ flex: 1 }}>
                 <Button
                   label="Set Free"
-                  variant={entitlement === 'free' ? 'primary' : 'secondary'}
+                  variant={entitlement === 'Free' ? 'primary' : 'secondary'}
                   onPress={handleSetFree}
-                  disabled={entitlement === 'free'}
+                  disabled={entitlement === 'Free'}
                 />
               </View>
               <View style={{ width: spacing.sm }} />
               <View style={{ flex: 1 }}>
                 <Button
                   label="Set Pro"
-                  variant={entitlement === 'pro' ? 'primary' : 'secondary'}
+                  variant={entitlement === 'Pro' ? 'primary' : 'secondary'}
                   onPress={handleSetPro}
-                  disabled={entitlement === 'pro'}
+                  disabled={entitlement === 'Pro'}
                 />
               </View>
             </View>
@@ -146,7 +146,7 @@ export default function SettingsScreen() {
                 <Button
                   label="3 Free habits"
                   variant="secondary"
-                  onPress={() => handleSeed('free')}
+                  onPress={() => handleSeed('Free')}
                 />
               </View>
               <View style={{ width: spacing.sm }} />
@@ -154,7 +154,7 @@ export default function SettingsScreen() {
                 <Button
                   label="7 Pro habits"
                   variant="secondary"
-                  onPress={() => handleSeed('pro')}
+                  onPress={() => handleSeed('Pro')}
                 />
               </View>
             </View>
@@ -163,7 +163,7 @@ export default function SettingsScreen() {
       )}
 
       {/* Account */}
-      <View>
+      <View style={{ paddingBottom: spacing.xl }}>
         <SectionLabel label="Account" />
         <Card>
           {!!email && (
