@@ -6,10 +6,14 @@
  * letting the handed-over simulator build show paywall → unlock without a
  * real App Store account or StoreKit Configuration File.
  */
+import { useAuthStore } from '@/features/auth/store';
 import { getItem, setItem } from '@/shared/storage';
 import type { Entitlement, Offering, PurchaseResult, PurchasesService } from './types';
 
-const ENTITLEMENT_KEY = '@momentum/entitlement';
+function entitlementKey(): string {
+  const email = useAuthStore.getState().email;
+  return `@momentum/entitlement/${email ?? 'anonymous'}`;
+}
 
 const MOCK_OFFERINGS: Offering[] = [
   {
@@ -23,17 +27,19 @@ const MOCK_OFFERINGS: Offering[] = [
     title: 'Momentum Pro — Annual',
     description: 'Everything in Pro, billed yearly. Save 40%.',
     price: '$34.99 / year',
+    strikethroughPrice: '$59.99 / year',
+    badge: 'BEST VALUE',
   },
 ];
 
 /** Exposed so the settings demo-mode toggle can reset to free. */
 export async function setMockEntitlement(value: Entitlement): Promise<void> {
-  await setItem(ENTITLEMENT_KEY, value);
+  await setItem(entitlementKey(), value);
 }
 
 export const mockPurchasesService: PurchasesService = {
   async getEntitlement(): Promise<Entitlement> {
-    const stored = await getItem(ENTITLEMENT_KEY);
+    const stored = await getItem(entitlementKey());
     return stored === 'Pro' ? 'Pro' : 'Free';
   },
 
@@ -42,7 +48,7 @@ export const mockPurchasesService: PurchasesService = {
   },
 
   async purchase(_productId: string): Promise<PurchaseResult> {
-    await setItem(ENTITLEMENT_KEY, 'Pro');
+    await setItem(entitlementKey(), 'Pro');
     return { status: 'purchased' };
   },
 
