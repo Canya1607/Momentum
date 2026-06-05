@@ -55,7 +55,14 @@ function RootNavigator() {
   // Hydrate the Zustand store from persistent storage once on mount
   useEffect(() => {
     Promise.all([getSecureItem(SESSION_KEY), getItem(EMAIL_KEY)])
-      .then(([t, e]) => { setToken(t); setEmail(e); setLoading(false); })
+      .then(([t, e]) => {
+        // Validate stored session — token must match the expected format for
+        // the stored email. Clears any stale tokens from previous dev sessions.
+        const valid = t && e && t === `demo-${e}`;
+        setToken(valid ? t : null);
+        setEmail(valid ? e : null);
+        setLoading(false);
+      })
       .catch(() => { setToken(null); setEmail(null); setLoading(false); });
   }, []);
 
