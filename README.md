@@ -2,7 +2,7 @@
 
 A small, polished **universal React Native app (Expo)** built to demonstrate senior/lead-level engineering for a subscription DTC company. Runs on **iOS, Android, and Web from one codebase**, with a real **subscription paywall** flow.
 
-> This README is both my build guide and the repo's front page. It documents *why* each decision was made — which is the part a CTO actually reads.
+> This README documents *why* each decision was made — which is the part a CTO actually reads.
 
 ---
 
@@ -58,27 +58,30 @@ The employer leans React Native in conversation. Key point I lead with: **an Exp
 ```
 src/
   app/                      # Expo Router — file-based routes
-    (auth)/sign-in.tsx
-    (tabs)/index.tsx        # habit list
-    (tabs)/stats.tsx        # premium-gated
-    (tabs)/settings.tsx
+    (auth)/
+      welcome.tsx           # onboarding carousel (entry point)
+      sign-in.tsx
+    (tabs)/
+      index.tsx             # habit list
+      stats.tsx             # premium-gated
+      settings.tsx
     habit/[id].tsx          # add/edit (dynamic route)
     paywall.tsx             # modal
     _layout.tsx
   features/
-    habits/                 # components, hooks, data, types
-    subscription/           # paywall UI, entitlement hooks
-    auth/
-    stats/
+    habits/                 # components, hooks, API, and types
+    subscription/           # useEntitlement hook
+    auth/                   # store, useAuth, useAvatar, AvatarPicker
+    stats/                  # WeeklyChart, StatCard, useStats
   shared/
-    ui/                     # Button, Text, Card, etc. — token-driven
+    ui/                     # Button, Text, Card, Screen — token-driven
     storage/                # AsyncStorage + SecureStore wrappers
-    api/                    # query client, async data service
-    lib/
+    api/                    # queryClient + habitsService (CRUD over AsyncStorage)
+    lib/                    # date utilities, cross-platform alert
   services/
-    purchases/              # entitlement service (real + demo-mode mock)
-    theme/                  # design tokens, ThemeProvider
-  config/                   # env, feature flags, demo-mode flag
+    purchases/              # PurchasesService interface + mock + storekit impls
+    theme/                  # tokens, ThemeProvider, themeStore
+  config/                   # DEMO_MODE flag
 ```
 
 **Server vs client state split.** React Query manages all "data" (habits, stats) — even though the source is local for the demo, it's behind an async service so the pattern is identical to a real backend. Zustand handles session/UI state. `useState` stays local. This deliberately avoids the anti-pattern of dumping everything in one global store.
@@ -99,7 +102,7 @@ The README/code state clearly which is active. This is honest, and it shows I un
 **Free tier:** up to 3 habits, daily check-off, current streak.
 **Premium ("Momentum Pro"):** unlimited habits, statistics screen (simple charts), custom theme.
 
-**MVP screens:** sign-in → habit list → add/edit habit → stats (gated) → paywall → settings (restore, demo-mode toggle, sign out).
+**MVP screens:** onboarding carousel → sign-in → habit list → add/edit habit → stats (gated) → paywall → settings (avatar, restore, demo-mode toggle, sign out).
 
 **Reanimated touches:** spring check-off animation, streak indicator, swipe-to-delete row, paywall entrance.
 
@@ -111,23 +114,23 @@ The README/code state clearly which is active. This is honest, and it shows I un
 
 **Day 1 — Foundation + core feature**
 - Scaffold with `create-expo-app`, set up folders, TypeScript, Expo Router with `(auth)`/`(tabs)`.
-- Design tokens + ThemeProvider + a few `shared/ui` components.
-- Data service (AsyncStorage) + React Query wrapper.
-- Habit list + add/edit habit, fully persistent. Running on simulator AND web.
+- Design tokens + ThemeProvider + `shared/ui` component library (Button, Text, Card, Screen).
+- Habit data service (AsyncStorage) + React Query wrapper.
+- Habit list + add/edit habit, fully persistent, running on simulator AND web.
 
 **Day 2 — Subscription + auth + gating**
-- `purchases` entitlement service: interface + demo-mode mock + StoreKit config wiring.
-- Paywall screen; premium-gate the stats screen.
-- Mocked auth flow with token in expo-secure-store.
-- Settings screen (restore, demo toggle, sign out).
+- `purchases` entitlement service: `PurchasesService` interface + demo-mode mock + StoreKit skeleton.
+- Paywall screen with annual/monthly offerings; premium-gate the stats screen.
+- Mocked auth flow with token in expo-secure-store; per-user data isolation.
+- Settings screen (restore, demo toggle, sign out, avatar upload).
 
 **Day 3 — Polish + package + ship**
-- Reanimated animations, stats charts, visual cleanup.
-- Finalize README; clean commits.
-- `eas build -p ios --profile preview` (simulator build).
+- Reanimated animations: spring check-off, streak badge, swipe-to-delete, paywall entrance, onboarding dots.
+- Stats screen: animated weekly bar chart + streak leaderboard.
+- Onboarding carousel (welcome screen) + polished sign-in with context-aware copy.
+- `eas build -p ios --profile preview` (simulator build for handover).
 - Record 2–3 min video showing the real StoreKit purchase flow.
-- Finalize one-page feature/contribution doc (this app + written write-ups of MEV video + effie> camera work).
-- *(Stretch if time: one custom native module via Expo Modules API.)*
+- *(Stretch: one custom native module via Expo Modules API.)*
 
 ---
 
@@ -197,12 +200,3 @@ These tools are only visible when `DEMO_MODE = true` (the default shipped config
 - [ ] **2–3 min video** showing the real StoreKit purchase → unlock flow
 - [ ] **One-page doc**: what I built here + written write-ups of MEV (real-time video, 16 concurrent streams, Twilio/WebSocket) and effie> (camera + TensorFlow/OpenCV)
 
----
-
-## 11. How to proceed (Claude Code)
-
-1. Create the project folder, open a fresh VS Code session with Claude Code.
-2. Put **this README.md** and **CLAUDE.md** in the project root.
-3. Start Claude Code and ask it to follow `CLAUDE.md`, beginning with **Day 1, Task 1** (scaffold).
-4. Work task-by-task; run on simulator + web after each.
-5. Keep commits small and meaningful (they're part of the portfolio).

@@ -32,7 +32,7 @@ export function useAuth() {
     queryClient.clear(); // flush cached data before clearing auth state
     setToken(null);
     setEmail(null);
-    router.replace('/(auth)/sign-in');
+    router.replace('/(auth)/welcome');
   }
 
   return { token, email, signIn, signOut };
