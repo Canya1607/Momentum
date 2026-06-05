@@ -3,6 +3,14 @@
  * All purchase logic flows through purchasesService (never imports mock/storekit directly).
  * Reanimated entrance animation added in Task 12.
  */
+import { useEntitlement, useOfferings, usePurchase, useRestorePurchases } from '@/features/subscription';
+import type { Offering } from '@/services/purchases';
+import { useTheme } from '@/services/theme';
+import { infoAlert } from '@/shared/lib/alert';
+import { Button } from '@/shared/ui/Button';
+import { Card } from '@/shared/ui/Card';
+import { Screen } from '@/shared/ui/Screen';
+import { Text } from '@/shared/ui/Text';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -13,14 +21,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useEntitlement, useOfferings, usePurchase, useRestorePurchases } from '@/features/subscription';
-import { infoAlert } from '@/shared/lib/alert';
-import { Button } from '@/shared/ui/Button';
-import { Card } from '@/shared/ui/Card';
-import { Screen } from '@/shared/ui/Screen';
-import { Text } from '@/shared/ui/Text';
-import { useTheme } from '@/services/theme';
-import type { Offering } from '@/services/purchases';
 
 const PRO_FEATURES: { icon: string; label: string }[] = [
   { icon: 'infinite-outline', label: 'Unlimited habits' },
@@ -44,7 +44,7 @@ export default function PaywallScreen() {
   const translateY = useSharedValue(60);
   const opacity = useSharedValue(0);
   useEffect(() => {
-    translateY.value = withSpring(0, { damping: 20, stiffness: 180 });
+    translateY.value = withSpring(0, { damping: 50, stiffness: 216 });
     opacity.value = withTiming(1, { duration: 350 });
   }, []);
   const entranceStyle = useAnimatedStyle(() => ({
@@ -182,7 +182,7 @@ function OfferingCard({ offering, selected, onSelect }: OfferingCardProps) {
               {offering.description}
             </Text>
           </View>
-          <View style={{ alignItems: 'flex-end' }}>
+          <View style={{ alignItems: 'flex-end', flexDirection: 'row', gap: 6 }}>
             <Text variant="label" style={{ color: colors.primary, fontWeight: '700' }}>
               {offering.price}
             </Text>
