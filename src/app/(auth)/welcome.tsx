@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
 
   slide: { height: '100%', justifyContent: 'center' },
-  visualArea: { alignItems: 'center', justifyContent: 'center', paddingVertical: 20, marginBottom: 8 },
+  visualArea: { height: 220, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
 
   bottom: { paddingTop: 8 },
   dotsRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
