@@ -60,7 +60,7 @@ function RootNavigator() {
     if (isLoading) return;
     const inAuthGroup = segments[0] === '(auth)';
     if (token === null && !inAuthGroup) {
-      router.replace('/(auth)/sign-in');
+      router.replace('/(auth)/welcome');
     } else if (token !== null && inAuthGroup) {
       router.replace('/(tabs)');
     }
